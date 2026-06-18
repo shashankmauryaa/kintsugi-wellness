@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, X } from "lucide-react";
 
 export default function Contact() {
+  const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -141,13 +142,52 @@ export default function Contact() {
               <p className="text-sm text-[var(--color-gold-800)] mb-4">
                 This practice does not provide emergency crisis support. If you are experiencing an emergency, please reach out to a local helpline immediately.
               </p>
-              <a href="#" className="text-sm font-medium text-[var(--color-gold-700)] hover:text-[var(--color-gold-900)] underline">
+              <button 
+                onClick={() => setShowModal(true)}
+                className="text-sm font-medium text-[var(--color-gold-700)] hover:text-[var(--color-gold-900)] underline"
+              >
                 View Emergency Resources
-              </a>
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Emergency Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-xl relative border border-[var(--color-gold-200)]">
+            <button 
+              onClick={() => setShowModal(false)}
+              className="absolute top-6 right-6 text-[var(--color-gold-500)] hover:text-[var(--color-gold-900)] transition-colors"
+            >
+              <X size={24} />
+            </button>
+            <h2 className="text-2xl font-heading text-[var(--color-gold-900)] mb-4">Emergency Resources</h2>
+            <p className="text-sm text-[var(--color-gold-800)] mb-6">
+              If you or someone you know is in immediate mental health distress, please reach out to these 24/7 helplines:
+            </p>
+            <div className="space-y-4">
+              <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
+                <div className="font-medium text-[var(--color-gold-900)]">Tele MANAS (National)</div>
+                <a href="tel:14416" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">14416</a>
+              </div>
+              <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
+                <div className="font-medium text-[var(--color-gold-900)]">Vandrevala Foundation</div>
+                <a href="tel:+919999666555" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">+91 9999 666 555</a>
+              </div>
+              <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
+                <div className="font-medium text-[var(--color-gold-900)]">NIMHANS Helpline</div>
+                <a href="tel:08046110007" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">080-46110007</a>
+              </div>
+              <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
+                <div className="font-medium text-[var(--color-gold-900)]">Aasra Crisis Center</div>
+                <a href="tel:9820466726" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">9820466726</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
