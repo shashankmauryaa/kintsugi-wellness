@@ -43,7 +43,7 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
     let consentFormId = "pending";
     if (!consentDocs.empty) {
       // Sort in memory to avoid needing a Firestore composite index
-      const docs = consentDocs.docs.sort((a, b) => {
+      const docs = consentDocs.docs.sort((a: any, b: any) => {
         return b.data().consentedAt.toMillis() - a.data().consentedAt.toMillis();
       });
       consentFormId = docs[0].id;

@@ -29,7 +29,7 @@ export default async function ClientPortal() {
       .get();
       
     const now = new Date();
-    bookingsSnapshot.forEach(doc => {
+    bookingsSnapshot.forEach((doc: any) => {
       const data = doc.data();
       const booking = { id: doc.id, ...data, startTime: data.startTime.toDate(), endTime: data.endTime.toDate() };
       if (booking.startTime >= now) {
