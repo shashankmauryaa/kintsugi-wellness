@@ -17,7 +17,7 @@ export default function About() {
           {/* Profile Image */}
           <div className="w-full aspect-[4/5] bg-[var(--color-gold-100)] rounded-3xl overflow-hidden relative border border-[var(--color-gold-200)]">
             <img 
-              src="/khushi.jpg" 
+              src="/khushi.JPG" 
               alt="Khushi Mundra Profile Photo" 
               className="w-full h-full object-cover"
             />
