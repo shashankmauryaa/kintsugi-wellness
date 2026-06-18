@@ -1,65 +1,145 @@
-import Image from "next/image";
+"use client";
+
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { ArrowRight, Heart, Users, Leaf, Sparkles } from "lucide-react";
 
 export default function Home() {
+  const fadeIn: any = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  const staggerContainer: any = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="flex flex-col items-center w-full">
+      {/* Full-width Hero Image */}
+      <motion.div 
+        className="w-full h-screen relative mb-16 -mt-[88px]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <img 
+          src="/kintsugi-vase.png" 
+          alt="Kintsugi Wellness vase" 
+          className="w-full h-full object-cover object-[center_30%]"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1616861214040-3882f07d2c38?q=80&w=2500&auto=format&fit=crop";
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+        <div className="absolute bottom-12 left-8 md:left-16 z-10">
+          <Link 
+            href="/book" 
+            className="px-8 py-4 bg-white/30 hover:bg-white/50 border border-white/40 text-[var(--color-gold-900)] backdrop-blur-md rounded-full text-lg font-medium shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:-translate-y-1 transition-all flex items-center justify-center"
+          >
+            Book a Session
+          </Link>
+        </div>
+      </motion.div>
+
+      {/* Hero Content */}
+      <section className="w-full max-w-6xl px-8 pb-24 mx-auto flex flex-col items-center">
+        <motion.div 
+          className="w-full text-center max-w-3xl"
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+        >
+          <motion.h1 
+            variants={fadeIn}
+            className="text-4xl md:text-6xl font-heading text-[var(--color-gold-900)] leading-tight mb-6"
+          >
+            Therapy at <br className="hidden md:block" /> your own pace.
+          </motion.h1>
+          <motion.p 
+            variants={fadeIn}
+            className="text-lg md:text-xl text-[var(--color-gold-800)] mb-10 mx-auto"
+          >
+            A warm, compassionate, and safe space for emotional exploration and reflective growth. Healing does not need to be rushed.
+          </motion.p>
+          <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4 justify-center">
+            <Link 
+              href="/services" 
+              className="w-full sm:w-auto px-8 py-4 bg-[var(--color-gold-700)] hover:bg-[var(--color-gold-800)] text-white rounded-full text-lg font-medium transition-all flex items-center justify-center gap-2"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Begin Your Journey <ArrowRight size={20} />
+            </Link>
+            <Link 
+              href="/about" 
+              className="w-full sm:w-auto px-8 py-4 bg-transparent border border-[var(--color-gold-400)] text-[var(--color-gold-800)] hover:bg-[var(--color-gold-100)] rounded-full text-lg font-medium transition-all text-center"
             >
-              Learning
-            </a>{" "}
-            center.
+              Learn More
+            </Link>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Core Values Section */}
+      <section className="w-full bg-white py-24 px-8 border-y border-[var(--color-gold-100)]">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-heading text-[var(--color-gold-900)] mb-4">Core Values</h2>
+            <p className="text-[var(--color-gold-700)] max-w-2xl mx-auto">
+              Our practice is built on a foundation of empathy, respect, and deep understanding of the human experience.
+            </p>
+          </div>
+          
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            {[
+              { title: "Collaborative", desc: "Therapy is built together.", icon: Users },
+              { title: "Non-Judgmental", desc: "Clients are welcomed with openness and respect.", icon: Heart },
+              { title: "Human-Centered", desc: "People matter more than labels.", icon: Sparkles },
+              { title: "Growth-Oriented", desc: "Therapy supports meaningful change.", icon: Leaf },
+            ].map((value, i) => (
+              <motion.div 
+                key={i} 
+                variants={fadeIn}
+                className="bg-[var(--color-gold-50)] p-8 rounded-2xl border border-[var(--color-gold-100)] hover:shadow-lg transition-shadow"
+              >
+                <div className="w-12 h-12 bg-[var(--color-gold-200)] text-[var(--color-gold-800)] rounded-xl flex items-center justify-center mb-6">
+                  <value.icon size={24} />
+                </div>
+                <h3 className="text-xl font-heading text-[var(--color-gold-900)] mb-3">{value.title}</h3>
+                <p className="text-[var(--color-gold-700)]">{value.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Practice Philosophy */}
+      <section className="w-full max-w-4xl px-8 py-24 text-center">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeIn}
+        >
+          <Sparkles className="mx-auto text-[var(--color-gold-400)] mb-8" size={32} />
+          <h2 className="text-3xl md:text-5xl font-heading text-[var(--color-gold-900)] mb-8 leading-tight">
+            "Therapy is not about fixing people. Healing does not need to be rushed. The therapeutic relationship itself can be healing."
+          </h2>
+          <p className="text-lg text-[var(--color-gold-800)]">
+            — Khushi Mundra, Counselling Psychologist
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        </motion.div>
+      </section>
     </div>
   );
 }

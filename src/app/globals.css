@@ -1,26 +1,44 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-gold-50: #fbf9f4;
+  --color-gold-100: #f4eee2;
+  --color-gold-200: #eadabc;
+  --color-gold-300: #dfc18d;
+  --color-gold-400: #d6a760;
+  --color-gold-500: #cd8e3c;
+  --color-gold-600: #bd7532;
+  --color-gold-700: #9e5b2b;
+  --color-gold-800: #814a27;
+  --color-gold-900: #683d22;
+  --color-gold-950: #3a1f10;
+
+  --color-surface-50: #ffffff;
+  --color-surface-100: #fcfcfc;
+  --color-surface-200: #f5f5f5;
+  --color-surface-300: #ebebeb;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Outfit', system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--color-surface-50);
+    --foreground: #1a1a1a;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    color: #111111;
+  }
 }
