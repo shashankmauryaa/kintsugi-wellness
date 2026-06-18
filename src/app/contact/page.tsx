@@ -56,7 +56,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-medium text-[var(--color-gold-900)]">Email</h3>
-                    <p className="text-[var(--color-gold-700)]">hello@kintsugiwellness.com</p>
+                    <p className="text-[var(--color-gold-700)]">mundrakhushi18@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -74,7 +74,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-medium text-[var(--color-gold-900)]">Location</h3>
-                    <p className="text-[var(--color-gold-700)]">Bangalore, India<br/>(Online sessions available globally)</p>
+                    <p className="text-[var(--color-gold-700)]">Bangalore (Offline) <br/>Currently in Gangtok<br/>(Online sessions available globally)</p>
                   </div>
                 </div>
               </div>
