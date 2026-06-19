@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
-import { Mail, Phone, MessageSquare, ArrowUp } from "lucide-react";
+import { Mail, Phone, MessageSquare } from "lucide-react";
 import LegalModals from "@/components/LegalModals";
 import FaqLink from "@/components/FaqLink";
 import "./globals.css";
@@ -123,11 +123,6 @@ export default function RootLayout({
           {/* Bottom Bar */}
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between pt-8 border-t border-[#4a3622] relative">
             <LegalModals />
-            
-            {/* Scroll to Top */}
-            <a href="#top" className="w-12 h-12 bg-[#b6826e] hover:bg-[#c99580] text-white rounded-full flex items-center justify-center transition-all shadow-lg mx-auto md:mx-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2">
-              <ArrowUp size={20} />
-            </a>
           </div>
         </footer>
       </body>
