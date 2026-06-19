@@ -113,7 +113,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-medium text-[var(--color-gold-900)]">Email</h3>
-                    <p className="text-[var(--color-gold-700)]">mundrakhushi18@gmail.com</p>
+                    <p className="text-[var(--color-gold-700)]">khushiimundrawork@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -179,7 +179,7 @@ export default function Contact() {
               <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
                 <div className="font-medium text-[var(--color-gold-900)]">NIMHANS</div>
                 <a href="tel:08046110007" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">080-46110007</a>
-                <a href="http://nimhans.ac.in/pssmhs-helpline/" target="_blank" rel="noopener noreferrer" className="text-[var(--color-gold-600)] hover:text-[var(--color-gold-800)] text-sm underline block mt-1">Website</a>
+                <a href="http://nimhans.ac.in/pssmhs-helpline/" target="_blank" rel="noopener noreferrer" className="text-[var(--color-gold-600)] hover:text-[var(--color-gold-800)] text-sm underline block mt-1">http://nimhans.ac.in/pssmhs-helpline/</a>
               </div>
               <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
                 <div className="font-medium text-[var(--color-gold-900)]">CADABAM'S Suicide Helpline</div>
@@ -191,12 +191,12 @@ export default function Contact() {
               <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
                 <div className="font-medium text-[var(--color-gold-900)]">Vandrevala Foundation for Mental Health</div>
                 <a href="tel:+919999666555" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">+91 9999 666 555</a>
-                <a href="http://www.vandrevalafoundation.com/" target="_blank" rel="noopener noreferrer" className="text-[var(--color-gold-600)] hover:text-[var(--color-gold-800)] text-sm underline block mt-1">Website</a>
+                <a href="http://www.vandrevalafoundation.com/" target="_blank" rel="noopener noreferrer" className="text-[var(--color-gold-600)] hover:text-[var(--color-gold-800)] text-sm underline block mt-1">http://www.vandrevalafoundation.com/</a>
               </div>
               <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
                 <div className="font-medium text-[var(--color-gold-900)]">AASRA</div>
                 <a href="tel:9820466726" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">09820466726</a>
-                <a href="http://www.aasra.info/helpline.html" target="_blank" rel="noopener noreferrer" className="text-[var(--color-gold-600)] hover:text-[var(--color-gold-800)] text-sm underline block mt-1">Website</a>
+                <a href="http://www.aasra.info/helpline.html" target="_blank" rel="noopener noreferrer" className="text-[var(--color-gold-600)] hover:text-[var(--color-gold-800)] text-sm underline block mt-1">http://www.aasra.info/helpline.html</a>
               </div>
             </div>
           </div>

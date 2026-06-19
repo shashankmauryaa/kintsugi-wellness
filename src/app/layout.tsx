@@ -59,7 +59,7 @@ export default function RootLayout({
             {/* Column 1: Brand */}
             <div className="md:w-1/3">
               <h2 className="text-3xl font-heading text-[var(--color-gold-100)] mb-2">Kintsugi Wellness</h2>
-              <p className="text-sm italic text-[#bca289] mb-6">therapy at your own pace</p>
+              <p className="text-sm italic text-[#bca289] mb-6">Kintsugi serves as a metaphor for healing, proving that our emotional wounds and scars can make us stronger and more beautiful than we were before.</p>
               <p className="text-sm text-[#bca289] mb-8 leading-relaxed max-w-xs">
                 A warm, reflective, and trauma-informed counselling practice in Bangalore. Online therapy & counselling for adolescents, college students, and adults.
               </p>
@@ -105,10 +105,10 @@ export default function RootLayout({
 
             {/* Column 4: Reach Us */}
             <div>
-              <h3 className="text-xs font-bold tracking-widest text-[#8a7258] uppercase mb-6">Reach Us</h3>
+              <h3 className="text-xs font-bold tracking-widest text-[#8a7258] uppercase mb-6">Reach Out</h3>
               <div className="flex flex-col gap-4">
-                <a href="mailto:mundrakhushi18@gmail.com" className="flex items-center gap-3 text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">
-                  <Mail size={16} /> mundrakhushi18@gmail.com
+                <a href="mailto:khushiimundrawork@gmail.com" className="flex items-center gap-3 text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">
+                  <Mail size={16} /> khushiimundrawork@gmail.com
                 </a>
                 <a href="tel:+917557040195" className="flex items-center gap-3 text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">
                   <Phone size={16} /> +91 7557040195
