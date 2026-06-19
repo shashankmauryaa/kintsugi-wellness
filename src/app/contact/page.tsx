@@ -15,15 +15,15 @@ export default function Contact() {
   const handleWhatsApp = () => {
     // You can update this phone number to your actual WhatsApp number
     const phone = "+91 7557040195"; 
-    const text = `Hi Khushi,\n\nI'm ${formData.name}.\nEmail: ${formData.email}\nInterested in: ${formData.service}\n\nMessage:\n${formData.message}`;
+    const text = `Hi Khushi,\n\nI'm ${formData.name}.\nInterested in ${formData.service}.\n${formData.message}\n\nThank you,\n${formData.email}`;
     const encodedText = encodeURIComponent(text);
     window.open(`https://wa.me/${phone}?text=${encodedText}`, "_blank");
   };
 
   const handleEmail = () => {
     const email = "mundrakhushi18@gmail.com";
-    const subject = encodeURIComponent(`New Inquiry from ${formData.name} regarding ${formData.service}`);
-    const body = encodeURIComponent(`Hi Khushi,\n\nI'm ${formData.name}.\nEmail: ${formData.email}\nInterested in: ${formData.service}\n\nMessage:\n${formData.message}`);
+    const subject = encodeURIComponent(`Inquiry from ${formData.name} regarding ${formData.service}`);
+    const body = encodeURIComponent(`Hi Khushi,\n\nI'm ${formData.name}.\nInterested in ${formData.service}.\n${formData.message}\n\nThank you,\n${formData.email}`);
     window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
   };
   return (
