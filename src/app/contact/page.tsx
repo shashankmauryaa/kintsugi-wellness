@@ -167,22 +167,36 @@ export default function Contact() {
             <p className="text-sm text-[var(--color-gold-800)] mb-6">
               If you or someone you know is in immediate mental health distress, please reach out to these 24/7 helplines:
             </p>
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
               <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
                 <div className="font-medium text-[var(--color-gold-900)]">Tele MANAS (National)</div>
                 <a href="tel:14416" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">14416</a>
               </div>
               <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
-                <div className="font-medium text-[var(--color-gold-900)]">Vandrevala Foundation</div>
-                <a href="tel:+919999666555" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">+91 9999 666 555</a>
+                <div className="font-medium text-[var(--color-gold-900)]">KIRAN (Government of India)</div>
+                <a href="tel:18005990019" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">1800-599-0019</a>
               </div>
               <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
-                <div className="font-medium text-[var(--color-gold-900)]">NIMHANS Helpline</div>
+                <div className="font-medium text-[var(--color-gold-900)]">NIMHANS</div>
                 <a href="tel:08046110007" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">080-46110007</a>
+                <a href="http://nimhans.ac.in/pssmhs-helpline/" target="_blank" rel="noopener noreferrer" className="text-[var(--color-gold-600)] hover:text-[var(--color-gold-800)] text-sm underline block mt-1">Website</a>
               </div>
               <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
-                <div className="font-medium text-[var(--color-gold-900)]">Aasra Crisis Center</div>
-                <a href="tel:9820466726" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">9820466726</a>
+                <div className="font-medium text-[var(--color-gold-900)]">CADABAM'S Suicide Helpline</div>
+                <div className="flex gap-4">
+                  <a href="tel:09611194949" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">09611194949</a>
+                  <a href="tel:09741476476" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">09741476476</a>
+                </div>
+              </div>
+              <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
+                <div className="font-medium text-[var(--color-gold-900)]">Vandrevala Foundation for Mental Health</div>
+                <a href="tel:+919999666555" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">+91 9999 666 555</a>
+                <a href="http://www.vandrevalafoundation.com/" target="_blank" rel="noopener noreferrer" className="text-[var(--color-gold-600)] hover:text-[var(--color-gold-800)] text-sm underline block mt-1">Website</a>
+              </div>
+              <div className="p-4 bg-[var(--color-gold-50)] rounded-xl border border-[var(--color-gold-100)]">
+                <div className="font-medium text-[var(--color-gold-900)]">AASRA</div>
+                <a href="tel:9820466726" className="text-[var(--color-gold-700)] hover:underline block mt-1 font-medium text-lg">09820466726</a>
+                <a href="http://www.aasra.info/helpline.html" target="_blank" rel="noopener noreferrer" className="text-[var(--color-gold-600)] hover:text-[var(--color-gold-800)] text-sm underline block mt-1">Website</a>
               </div>
             </div>
           </div>
