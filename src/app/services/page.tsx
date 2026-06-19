@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, User, GraduationCap, MessagesSquare, Users } from "lucide-react";
+import FaqLink from "@/components/FaqLink";
 
 export default function Services() {
   const services = [
@@ -97,6 +98,25 @@ export default function Services() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* FAQ Note Section */}
+      <section className="w-full max-w-4xl px-8 pt-24 text-center">
+        <div className="bg-[var(--color-gold-50)] rounded-[2.5rem] p-10 md:p-14 border border-[var(--color-gold-200)] relative overflow-hidden shadow-sm">
+          {/* Decorative subtle element */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-gold-100)] rounded-full blur-3xl opacity-60 translate-x-10 -translate-y-10"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-[var(--color-gold-100)] rounded-full blur-3xl opacity-60 -translate-x-10 translate-y-10"></div>
+          
+          <div className="relative z-10">
+            <h3 className="text-2xl font-heading text-[var(--color-gold-900)] mb-4">Still have questions?</h3>
+            <p className="text-lg text-[var(--color-gold-800)] mb-8 max-w-2xl mx-auto">
+              If you're unsure about the process, what to expect, or which service feels right for you, we have answers.
+            </p>
+            <FaqLink className="inline-flex items-center justify-center px-8 py-3 bg-white hover:bg-white/80 border border-[var(--color-gold-200)] text-[var(--color-gold-900)] rounded-full font-medium transition-all shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5">
+              View FAQs
+            </FaqLink>
+          </div>
         </div>
       </section>
     </div>

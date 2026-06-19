@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import { Mail, Phone, MessageSquare, ArrowUp } from "lucide-react";
 import LegalModals from "@/components/LegalModals";
+import FaqLink from "@/components/FaqLink";
 import "./globals.css";
 
 const inter = Inter({
@@ -39,7 +40,6 @@ export default function RootLayout({
             <a href="/about" className="hover:text-[var(--color-gold-600)] transition-colors">About</a>
             <a href="/services" className="hover:text-[var(--color-gold-600)] transition-colors">Services</a>
             <a href="/what-to-expect" className="hover:text-[var(--color-gold-600)] transition-colors">What to Expect</a>
-            <a href="/faq" className="hover:text-[var(--color-gold-600)] transition-colors">FAQ</a>
             <a href="/contact" className="hover:text-[var(--color-gold-600)] transition-colors">Contact</a>
           </nav>
           <div className="flex items-center gap-4">
@@ -89,7 +89,7 @@ export default function RootLayout({
                 <a href="/about" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">About Counsellor</a>
                 <a href="/services" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">Services</a>
                 <a href="/what-to-expect" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">What to Expect</a>
-                <a href="/faq" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">FAQs</a>
+                <FaqLink />
               </nav>
             </div>
 
