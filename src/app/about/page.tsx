@@ -7,11 +7,24 @@ export default function About() {
   return (
     <div className="flex-1 flex flex-col items-center w-full bg-white">
       {/* Hero Section */}
-      <section className="w-full max-w-5xl px-8 py-20 text-center">
-        <h1 className="text-4xl md:text-5xl font-heading text-[var(--color-gold-900)] mb-6">About Khushi Mundra</h1>
-        <p className="text-lg text-[var(--color-gold-700)] max-w-2xl mx-auto">
-          Counselling Psychologist dedicated to providing a warm, reflective, and safe space for healing and personal growth.
-        </p>
+      <section className="min-h-[calc(100vh-80px)] flex flex-col justify-center text-center px-8 max-w-4xl mx-auto py-20">
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-4xl md:text-5xl lg:text-6xl font-heading text-[var(--color-gold-900)] mb-12"
+        >
+          About Khushi Mundra
+        </motion.h1>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="space-y-6 text-lg md:text-xl text-[var(--color-gold-800)]"
+        >
+          <p>Counselling Psychologist dedicated to providing a warm, reflective, and safe space for healing and personal growth.</p>
+        </motion.div>
       </section>
 
       {/* Two Column Section */}

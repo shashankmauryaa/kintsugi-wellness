@@ -17,7 +17,7 @@ export default function WhatToExpect() {
   return (
     <div className="flex-1 flex flex-col w-full bg-[var(--color-gold-50)] pt-12">
       {/* Hero Section */}
-      <section className="min-h-[70vh] flex flex-col items-center justify-center text-center px-8 max-w-4xl mx-auto py-20">
+      <section className="min-h-[calc(100vh-80px)] flex flex-col justify-center text-center px-8 max-w-4xl mx-auto py-20">
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

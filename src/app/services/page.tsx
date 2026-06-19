@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { ArrowRight, User, GraduationCap, MessagesSquare, Users } from "lucide-react";
 
 export default function Services() {
@@ -40,11 +43,24 @@ export default function Services() {
   return (
     <div className="flex-1 flex flex-col items-center w-full pb-24">
       {/* Header */}
-      <section className="w-full bg-[var(--color-gold-50)] py-20 px-8 text-center border-b border-[var(--color-gold-200)]">
-        <h1 className="text-4xl md:text-5xl font-heading text-[var(--color-gold-900)] mb-6">Our Services</h1>
-        <p className="text-lg text-[var(--color-gold-800)] max-w-2xl mx-auto">
-          Counselling adapted to your pace and lived experiences. Choose the support that feels right for you.
-        </p>
+      <section className="min-h-[calc(100vh-80px)] flex flex-col justify-center text-center px-8 max-w-4xl mx-auto py-20">
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-4xl md:text-5xl lg:text-6xl font-heading text-[var(--color-gold-900)] mb-12"
+        >
+          Our Services
+        </motion.h1>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="space-y-6 text-lg md:text-xl text-[var(--color-gold-800)]"
+        >
+          <p>Counselling adapted to your pace and lived experiences. Choose the support that feels right for you.</p>
+        </motion.div>
       </section>
 
       {/* Services Grid */}
