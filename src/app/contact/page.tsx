@@ -5,6 +5,7 @@ import { Mail, Phone, MapPin, X } from "lucide-react";
 
 export default function Contact() {
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,7 +13,18 @@ export default function Contact() {
     message: ""
   });
 
+  const validateForm = () => {
+    if (!formData.name.trim() || !formData.email.trim()) {
+      setError("Please fill in your name and email before sending.");
+      return false;
+    }
+    setError(null);
+    return true;
+  };
+
   const handleWhatsApp = () => {
+    if (!validateForm()) return;
+    
     // You can update this phone number to your actual WhatsApp number
     const phone = "+91 7557040195"; 
     const text = `Hi Khushi,\n\nI'm ${formData.name}.\nInterested in ${formData.service}.\n${formData.message}\n\nThank you,\n${formData.email}`;
@@ -21,7 +33,9 @@ export default function Contact() {
   };
 
   const handleEmail = () => {
-    const email = "mundrakhushi18@gmail.com";
+    if (!validateForm()) return;
+
+    const email = "khushiimundrawork@gmail.com";
     const subject = encodeURIComponent(`Inquiry from ${formData.name} regarding ${formData.service}`);
     const body = encodeURIComponent(`Hi Khushi,\n\nI'm ${formData.name}.\nInterested in ${formData.service}.\n${formData.message}\n\nThank you,\n${formData.email}`);
     window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
@@ -83,6 +97,11 @@ export default function Contact() {
                   className="w-full px-4 py-3 rounded-xl border border-[var(--color-gold-200)] focus:ring-2 focus:ring-[var(--color-gold-400)] focus:outline-none resize-none"
                 ></textarea>
               </div>
+              {error && (
+                <div className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">
+                  {error}
+                </div>
+              )}
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <button 
                   type="button" 
