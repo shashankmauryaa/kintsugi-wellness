@@ -83,3 +83,37 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
     return { success: false, error: error.message || "Failed to process booking" };
   }
 }
+
+export async function saveSessionNote(bookingId: string, note: string) {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session")?.value;
+  if (!session) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  try {
+    const decodedToken = await auth.verifySessionCookie(session, true);
+    const uid = decodedToken.uid;
+
+    const bookingRef = db.collection("bookings").doc(bookingId);
+    const bookingDoc = await bookingRef.get();
+
+    if (!bookingDoc.exists) {
+      return { success: false, error: "Booking not found" };
+    }
+
+    if (bookingDoc.data()?.userId !== uid) {
+      return { success: false, error: "Unauthorized access to booking" };
+    }
+
+    await bookingRef.update({
+      note: note,
+      updatedAt: new Date()
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Save note error:", error);
+    return { success: false, error: error.message || "Failed to save note" };
+  }
+}
