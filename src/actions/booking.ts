@@ -82,8 +82,8 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
           sendUpdates: 'all', // Send invite to client
           conferenceDataVersion: 1, // Generate Meet link
           requestBody: {
-            summary: `${serviceName} (${userName})`,
-            description: `Automated booking for ${userName}.\nService: ${serviceName}`,
+            summary: serviceName,
+            description: `Thank you for booking a session. I look forward to meeting with you.\n\nI hope to offer a space that feels thoughtful, supportive, and open to whatever you may be bringing with you. Sessions are approximately 50-60 minutes long and will be held online. You'll receive the meeting details once your booking is confirmed.\n\nIf you need to cancel or reschedule, please try to let me know at least a day in advance. Of course, I understand that unexpected emergencies can arise, and we can work around those situations as needed.\n\n---\n*(Internal Note - Booked by: ${userName})*`,
             start: {
               dateTime: startTime.toISOString(),
             },
