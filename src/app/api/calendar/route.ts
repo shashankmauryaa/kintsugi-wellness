@@ -54,7 +54,7 @@ export async function GET(request: Request) {
     });
 
     const busySlots = response.data.calendars?.[calendarId]?.busy || [];
-    const availableSlots = generateAvailableSlots(requestedDate, busySlots, duration);
+    const availableSlots = generateAvailableSlots(dateStr, busySlots, duration);
 
     return NextResponse.json({ slots: availableSlots, isMock: false });
   } catch (error) {
@@ -64,13 +64,25 @@ export async function GET(request: Request) {
 }
 
 // Helper to generate available slots based on working hours and busy periods
-function generateAvailableSlots(date: Date, busySlots: any[], durationMinutes: number) {
+function generateAvailableSlots(dateStr: string, busySlots: any[], durationMinutes: number) {
+  // We explicitly construct the date object using the IST timezone offset (+05:30)
+  // This guarantees that regardless of where the server is physically located (Vercel uses UTC),
+  // the slots start at exactly 10:00 AM and end at exactly 6:00 PM Indian Standard Time.
+  const startHourStr = WORKING_HOURS.start.toString().padStart(2, '0');
+  const endHourStr = WORKING_HOURS.end.toString().padStart(2, '0');
+  
+  const startSlotStr = `${dateStr}T${startHourStr}:00:00+05:30`;
+  const endSlotStr = `${dateStr}T${endHourStr}:00:00+05:30`;
+  
+  let currentSlot = new Date(startSlotStr);
+  const endOfDayWindow = new Date(endSlotStr);
+
   // --------------------------------------------------------------------------------
   // ⚙️ WEEKEND CONFIGURATION
   // To work on weekends, simply comment out the line below.
-  // To only block Sundays, use: if (date.getDay() === 0) return [];
+  // To only block Sundays, use: if (currentSlot.getDay() === 0) return [];
   // --------------------------------------------------------------------------------
-  if (isWeekend(date)) return []; 
+  if (isWeekend(currentSlot)) return []; 
 
   // ================================================================================
   // 🕒 REWIND / BUFFER TIME CONFIGURATION
@@ -80,23 +92,17 @@ function generateAvailableSlots(date: Date, busySlots: any[], durationMinutes: n
   const REWIND_TIME_MINUTES = 30;
 
   const slots = [];
-  let currentSlot = new Date(date);
-  currentSlot.setHours(WORKING_HOURS.start, 0, 0, 0);
-
-  const endOfDay = new Date(date);
-  endOfDay.setHours(WORKING_HOURS.end, 0, 0, 0);
-
   const now = new Date();
 
   // Step by 15-minute intervals
-  while (currentSlot < endOfDay) {
+  while (currentSlot < endOfDayWindow) {
     const slotEnd = new Date(currentSlot);
     // Add the session duration AND the rewind time to ensure the whole block is free
     const totalRequiredTime = durationMinutes + REWIND_TIME_MINUTES;
     slotEnd.setMinutes(slotEnd.getMinutes() + totalRequiredTime);
 
     // If this specific session + rewind time would push past working hours, break
-    if (slotEnd > endOfDay) {
+    if (slotEnd > endOfDayWindow) {
       break;
     }
 
@@ -136,6 +142,6 @@ function generateAvailableSlots(date: Date, busySlots: any[], durationMinutes: n
   return slots;
 }
 
-function mockAvailableSlots(date: Date, durationMinutes: number) {
-  return generateAvailableSlots(date, [], durationMinutes); // Generate all slots assuming no busy times
+function mockAvailableSlots(dateStr: string, durationMinutes: number) {
+  return generateAvailableSlots(dateStr, [], durationMinutes); // Generate all slots assuming no busy times
 }
