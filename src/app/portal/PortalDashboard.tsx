@@ -193,6 +193,20 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
                   Confirmed
                 </div>
               </div>
+              
+              {selectedUpcoming.googleMeetLink && (
+                <div className="p-4 bg-[var(--color-gold-50)] rounded-2xl border border-[var(--color-gold-200)]">
+                  <p className="text-xs text-[var(--color-gold-600)] uppercase tracking-wider font-bold mb-3">Location</p>
+                  <a 
+                    href={selectedUpcoming.googleMeetLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    Join Google Meet
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>,

@@ -10,7 +10,7 @@ export default function Services() {
     {
       title: "Individual Counselling",
       description: "One-on-one sessions tailored to your unique needs, providing a safe space to explore anxiety, stress, relationships, life transitions, and emotional wellbeing.",
-      duration: "50 Minutes",
+      duration: "60 Minutes",
       icon: User,
       tags: ["Anxiety", "Stress", "Relationships", "Life transitions"],
       href: "/book?service=individual",
@@ -18,7 +18,7 @@ export default function Services() {
     {
       title: "Student Counselling",
       description: "Specialized support for students navigating academic pressure, identity exploration, career uncertainty, and peer relationships.",
-      duration: "50 Minutes",
+      duration: "60 Minutes",
       icon: GraduationCap,
       tags: ["Academic stress", "Identity", "Career uncertainty"],
       href: "/book?service=student",

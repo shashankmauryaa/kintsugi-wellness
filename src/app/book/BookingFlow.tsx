@@ -13,8 +13,8 @@ declare global {
 }
 
 const SERVICES = [
-  { id: "individual", title: "Individual Counselling", price: 1500, duration: 50 },
-  { id: "student", title: "Student Counselling", price: 1000, duration: 50 },
+  { id: "individual", title: "Individual Counselling", price: 1500, duration: 60 },
+  { id: "student", title: "Student Counselling", price: 1000, duration: 60 },
   { id: "listening", title: "Listening Space Session", price: 600, duration: 30 },
 ];
 
@@ -50,7 +50,7 @@ export default function BookingFlow() {
       setError(null);
       try {
         const dateStr = format(selectedDate, "yyyy-MM-dd");
-        const res = await fetch(`/api/calendar?date=${dateStr}`);
+        const res = await fetch(`/api/calendar?date=${dateStr}&duration=${selectedService.duration}`);
         const data = await res.json();
         
         if (data.error) throw new Error(data.error);
@@ -64,7 +64,7 @@ export default function BookingFlow() {
     }
     
     fetchSlots();
-  }, [selectedDate]);
+  }, [selectedDate, selectedService.duration]);
 
   const handleDateChange = (daysToAdd: number) => {
     setSelectedDate(addDays(selectedDate, daysToAdd));
@@ -100,7 +100,8 @@ export default function BookingFlow() {
         }, {
           serviceId: selectedService.id,
           startTime: selectedSlot,
-          amount: selectedService.price
+          amount: selectedService.price,
+          duration: selectedService.duration
         });
         
         if (verifyRes.success) {
@@ -128,7 +129,8 @@ export default function BookingFlow() {
           }, {
             serviceId: selectedService.id,
             startTime: selectedSlot,
-            amount: selectedService.price
+            amount: selectedService.price,
+            duration: selectedService.duration
           });
 
           if (verifyRes.success) {
@@ -163,7 +165,7 @@ export default function BookingFlow() {
         </div>
         <h2 className="text-3xl font-heading text-[var(--color-gold-900)] mb-4">Booking Confirmed!</h2>
         <p className="text-[var(--color-gold-800)] mb-8 max-w-md mx-auto">
-          Your session for {format(new Date(selectedSlot!), "MMMM d, yyyy 'at' h:mm a")} has been successfully booked. You will receive a confirmation email shortly.
+          Your session for {format(new Date(selectedSlot!), "MMMM d, yyyy 'at' h:mm a")} to {format(new Date(new Date(selectedSlot!).getTime() + selectedService.duration * 60000), "h:mm a")} has been successfully booked. You will receive a confirmation email shortly.
         </p>
         <button 
           onClick={() => router.push("/portal")}
@@ -221,16 +223,67 @@ export default function BookingFlow() {
             {loadingSlots ? (
               <div className="py-12 text-center text-[var(--color-gold-600)]">Loading availability...</div>
             ) : availableSlots.length > 0 ? (
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
-                {availableSlots.map(slot => (
-                  <button
-                    key={slot.time}
-                    onClick={() => setSelectedSlot(slot.time)}
-                    className={`p-3 rounded-xl border text-sm font-medium transition-all ${selectedSlot === slot.time ? 'border-[var(--color-gold-600)] bg-[var(--color-gold-600)] text-white' : 'border-[var(--color-gold-200)] text-[var(--color-gold-800)] hover:border-[var(--color-gold-400)] hover:bg-[var(--color-gold-50)]'}`}
-                  >
-                    {slot.label}
-                  </button>
-                ))}
+              <div className="space-y-6">
+                {(() => {
+                  const morning = availableSlots.filter(s => new Date(s.time).getHours() < 12);
+                  const afternoon = availableSlots.filter(s => new Date(s.time).getHours() >= 12 && new Date(s.time).getHours() < 17);
+                  const evening = availableSlots.filter(s => new Date(s.time).getHours() >= 17);
+
+                  return (
+                    <>
+                      {morning.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium text-[var(--color-gold-600)] mb-3">Morning</h4>
+                          <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                            {morning.map(slot => (
+                              <button
+                                key={slot.time}
+                                onClick={() => setSelectedSlot(slot.time)}
+                                className={`p-3 rounded-xl border text-sm font-medium transition-all ${selectedSlot === slot.time ? 'border-[var(--color-gold-600)] bg-[var(--color-gold-600)] text-white' : 'border-[var(--color-gold-200)] text-[var(--color-gold-800)] hover:border-[var(--color-gold-400)] hover:bg-[var(--color-gold-50)]'}`}
+                              >
+                                {slot.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {afternoon.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium text-[var(--color-gold-600)] mb-3">Afternoon</h4>
+                          <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                            {afternoon.map(slot => (
+                              <button
+                                key={slot.time}
+                                onClick={() => setSelectedSlot(slot.time)}
+                                className={`p-3 rounded-xl border text-sm font-medium transition-all ${selectedSlot === slot.time ? 'border-[var(--color-gold-600)] bg-[var(--color-gold-600)] text-white' : 'border-[var(--color-gold-200)] text-[var(--color-gold-800)] hover:border-[var(--color-gold-400)] hover:bg-[var(--color-gold-50)]'}`}
+                              >
+                                {slot.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {evening.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium text-[var(--color-gold-600)] mb-3">Evening</h4>
+                          <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                            {evening.map(slot => (
+                              <button
+                                key={slot.time}
+                                onClick={() => setSelectedSlot(slot.time)}
+                                className={`p-3 rounded-xl border text-sm font-medium transition-all ${selectedSlot === slot.time ? 'border-[var(--color-gold-600)] bg-[var(--color-gold-600)] text-white' : 'border-[var(--color-gold-200)] text-[var(--color-gold-800)] hover:border-[var(--color-gold-400)] hover:bg-[var(--color-gold-50)]'}`}
+                              >
+                                {slot.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             ) : (
               <div className="py-12 text-center text-[var(--color-gold-600)] bg-[var(--color-gold-50)] rounded-2xl border border-dashed border-[var(--color-gold-200)]">
@@ -262,7 +315,9 @@ export default function BookingFlow() {
               </div>
               <div className="flex justify-between border-b border-[var(--color-gold-200)] pb-3">
                 <span>Date & Time</span>
-                <span className="font-medium text-[var(--color-gold-900)]">{selectedSlot && format(new Date(selectedSlot), "MMM d, yyyy - h:mm a")}</span>
+                <span className="font-medium text-[var(--color-gold-900)]">
+                  {selectedSlot && `${format(new Date(selectedSlot), "MMM d, yyyy - h:mm a")} to ${format(new Date(new Date(selectedSlot).getTime() + selectedService.duration * 60000), "h:mm a")}`}
+                </span>
               </div>
               <div className="flex justify-between pt-2">
                 <span className="font-medium text-lg">Total Amount</span>

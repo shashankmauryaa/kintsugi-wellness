@@ -11,18 +11,20 @@ const WORKING_HOURS = {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const dateStr = searchParams.get('date');
+  const durationParam = searchParams.get('duration');
   
   if (!dateStr) {
     return NextResponse.json({ error: 'Date is required' }, { status: 400 });
   }
 
+  const duration = durationParam ? parseInt(durationParam, 10) : 60; // Default to 60 mins
   const requestedDate = new Date(dateStr);
   const calendarId = process.env.GOOGLE_CALENDAR_ID;
 
   if (!calendarId || !process.env.GOOGLE_CALENDAR_CREDENTIALS_JSON) {
     // Return mock slots for development if credentials aren't set
     return NextResponse.json({
-      slots: mockAvailableSlots(requestedDate),
+      slots: mockAvailableSlots(requestedDate, duration),
       isMock: true,
       message: 'Google Calendar credentials not configured. Returning mock data.'
     });
@@ -49,7 +51,7 @@ export async function GET(request: Request) {
     });
 
     const busySlots = response.data.calendars?.[calendarId]?.busy || [];
-    const availableSlots = generateAvailableSlots(requestedDate, busySlots);
+    const availableSlots = generateAvailableSlots(requestedDate, busySlots, duration);
 
     return NextResponse.json({ slots: availableSlots, isMock: false });
   } catch (error) {
@@ -58,9 +60,21 @@ export async function GET(request: Request) {
   }
 }
 
-// Helper to generate available 50-minute slots based on working hours and busy periods
-function generateAvailableSlots(date: Date, busySlots: any[]) {
-  if (isWeekend(date)) return []; // Example: No weekends
+// Helper to generate available slots based on working hours and busy periods
+function generateAvailableSlots(date: Date, busySlots: any[], durationMinutes: number) {
+  // --------------------------------------------------------------------------------
+  // ⚙️ WEEKEND CONFIGURATION
+  // To work on weekends, simply comment out the line below.
+  // To only block Sundays, use: if (date.getDay() === 0) return [];
+  // --------------------------------------------------------------------------------
+  if (isWeekend(date)) return []; 
+
+  // ================================================================================
+  // 🕒 REWIND / BUFFER TIME CONFIGURATION
+  // This is the number of minutes automatically blocked off AFTER every session.
+  // Change this number to adjust your cooldown time (e.g., 15, 30, 0).
+  // ================================================================================
+  const REWIND_TIME_MINUTES = 30;
 
   const slots = [];
   let currentSlot = new Date(date);
@@ -71,23 +85,37 @@ function generateAvailableSlots(date: Date, busySlots: any[]) {
 
   const now = new Date();
 
+  // Step by 15-minute intervals
   while (currentSlot < endOfDay) {
     const slotEnd = new Date(currentSlot);
-    slotEnd.setMinutes(slotEnd.getMinutes() + 50); // 50 minute session
+    // Add the session duration AND the rewind time to ensure the whole block is free
+    const totalRequiredTime = durationMinutes + REWIND_TIME_MINUTES;
+    slotEnd.setMinutes(slotEnd.getMinutes() + totalRequiredTime);
+
+    // If this specific session + rewind time would push past working hours, break
+    if (slotEnd > endOfDay) {
+      break;
+    }
 
     // Check if slot is in the past
     if (isBefore(currentSlot, now)) {
-      currentSlot.setHours(currentSlot.getHours() + 1);
+      currentSlot.setMinutes(currentSlot.getMinutes() + 15);
       continue;
     }
 
-    // Check if slot overlaps with any busy period
+    // Check if this window (currentSlot to slotEnd) overlaps with ANY busy period
     const isBusy = busySlots.some(busy => {
       const busyStart = parseISO(busy.start);
       const busyEnd = parseISO(busy.end);
+      
+      // Overlap logic: A overlaps B if (StartA < EndB) and (EndA > StartB)
+      // Adding 1 minute buffer to avoid edge cases where they touch perfectly
+      const startWithBuffer = new Date(currentSlot.getTime() + 60000); // +1 min
+      const endWithBuffer = new Date(slotEnd.getTime() - 60000);       // -1 min
+
       return (
-        (isBefore(currentSlot, busyEnd) || currentSlot.getTime() === busyEnd.getTime()) &&
-        (isAfter(slotEnd, busyStart) || slotEnd.getTime() === busyStart.getTime())
+        isBefore(startWithBuffer, busyEnd) &&
+        isAfter(endWithBuffer, busyStart)
       );
     });
 
@@ -98,13 +126,13 @@ function generateAvailableSlots(date: Date, busySlots: any[]) {
       });
     }
 
-    // Move to next hour slot
-    currentSlot.setHours(currentSlot.getHours() + 1);
+    // Move forward by 15 minutes for maximum flexibility
+    currentSlot.setMinutes(currentSlot.getMinutes() + 15);
   }
 
   return slots;
 }
 
-function mockAvailableSlots(date: Date) {
-  return generateAvailableSlots(date, []); // Generate all slots assuming no busy times
+function mockAvailableSlots(date: Date, durationMinutes: number) {
+  return generateAvailableSlots(date, [], durationMinutes); // Generate all slots assuming no busy times
 }
