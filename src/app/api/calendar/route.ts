@@ -20,28 +20,31 @@ export async function GET(request: Request) {
   const duration = durationParam ? parseInt(durationParam, 10) : 60; // Default to 60 mins
   const requestedDate = new Date(dateStr);
   const calendarId = process.env.GOOGLE_CALENDAR_ID;
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
 
-  if (!calendarId || !process.env.GOOGLE_CALENDAR_CREDENTIALS_JSON) {
-    // Return mock slots for development if credentials aren't set
-    return NextResponse.json({
-      slots: mockAvailableSlots(requestedDate, duration),
-      isMock: true,
-      message: 'Google Calendar credentials not configured. Returning mock data.'
-    });
+  if (!calendarId || !clientId || !clientSecret || !refreshToken) {
+    return NextResponse.json({ error: "Missing Google Calendar or OAuth configuration" }, { status: 500 });
   }
 
+  const oauth2Client = new google.auth.OAuth2(
+    clientId,
+    clientSecret,
+    "https://developers.google.com/oauthplayground"
+  );
+
+  oauth2Client.setCredentials({
+    refresh_token: refreshToken
+  });
+
+  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+
+  // Define the time window for the requested day
+  const timeMin = startOfDay(requestedDate).toISOString();
+  const timeMax = endOfDay(requestedDate).toISOString();
+
   try {
-    const auth = new google.auth.GoogleAuth({
-      credentials: JSON.parse(process.env.GOOGLE_CALENDAR_CREDENTIALS_JSON),
-      scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
-    });
-
-    const calendar = google.calendar({ version: 'v3', auth });
-
-    // Define the time window for the requested day
-    const timeMin = startOfDay(requestedDate).toISOString();
-    const timeMax = endOfDay(requestedDate).toISOString();
-
     const response = await calendar.freebusy.query({
       requestBody: {
         timeMin,

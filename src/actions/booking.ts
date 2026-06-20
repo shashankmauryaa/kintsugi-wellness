@@ -54,15 +54,22 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
     let googleMeetLink = null;
     try {
       const calendarId = process.env.GOOGLE_CALENDAR_ID;
-      const credentials = process.env.GOOGLE_CALENDAR_CREDENTIALS_JSON;
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+      const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+      const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
       
-      if (calendarId && credentials) {
-        const gAuth = new google.auth.GoogleAuth({
-          credentials: JSON.parse(credentials),
-          scopes: ['https://www.googleapis.com/auth/calendar.events'],
+      if (calendarId && clientId && clientSecret && refreshToken) {
+        const oauth2Client = new google.auth.OAuth2(
+          clientId,
+          clientSecret,
+          "https://developers.google.com/oauthplayground"
+        );
+
+        oauth2Client.setCredentials({
+          refresh_token: refreshToken
         });
 
-        const calendar = google.calendar({ version: 'v3', auth: gAuth });
+        const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
         
         let serviceName = "Therapy Session";
         if (bookingDetails.serviceId === "individual") serviceName = "Individual Counselling";
@@ -72,22 +79,31 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
         // 1. Create the Main Therapy Session
         const event = await calendar.events.insert({
           calendarId: calendarId,
+          sendUpdates: 'all', // Send invite to client
+          conferenceDataVersion: 1, // Generate Meet link
           requestBody: {
             summary: `${serviceName} (${userName})`,
             description: `Automated booking for ${userName}.\nService: ${serviceName}`,
-            location: 'https://meet.google.com/zus-tnas-agy', // Static Personal Meeting Room
             start: {
               dateTime: startTime.toISOString(),
             },
             end: {
               dateTime: endTime.toISOString(),
+            },
+            attendees: [
+              { email: userEmail }
+            ],
+            conferenceData: {
+              createRequest: {
+                requestId: crypto.randomBytes(10).toString('hex'),
+                conferenceSolutionKey: { type: 'hangoutsMeet' }
+              }
             }
           }
         });
 
         googleCalendarEventId = event.data.id;
-        // Hardcode the static link so it appears on the client dashboard
-        googleMeetLink = 'https://meet.google.com/zus-tnas-agy';
+        googleMeetLink = event.data.hangoutLink || null;
 
         // 2. Create the Rewind Time Block if configured
         if (REWIND_TIME_MINUTES > 0) {
