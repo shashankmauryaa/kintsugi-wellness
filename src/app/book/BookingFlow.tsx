@@ -6,11 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { verifyAndCreateBooking } from "@/actions/booking";
 import { Calendar as CalendarIcon, Clock, CreditCard, ChevronRight, CheckCircle2 } from "lucide-react";
 
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
+
 
 const SERVICES = [
   { id: "individual", title: "Individual Counselling", price: 1500, duration: 60 },
@@ -32,16 +28,7 @@ export default function BookingFlow() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load Razorpay Script
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+
 
   // Fetch Slots
   useEffect(() => {
@@ -76,84 +63,31 @@ export default function BookingFlow() {
     setError(null);
 
     try {
-      // 1. Create Order
-      const orderRes = await fetch("/api/payments/create-order", {
+      // 1. Create Payment Link
+      const orderRes = await fetch("/api/payments/create-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           serviceId: selectedService.id,
           startTime: selectedSlot,
           amount: selectedService.price,
+          title: selectedService.title,
         }),
       });
       const orderData = await orderRes.json();
       
       if (orderData.error) throw new Error(orderData.error);
 
-      if (orderData.isMock) {
-        // Mock success flow if Razorpay isn't configured
-        const verifyRes = await verifyAndCreateBooking({
-          razorpay_order_id: orderData.orderId,
-          razorpay_payment_id: "mock_payment_id",
-          razorpay_signature: "mock_signature",
-          isMock: true
-        }, {
-          serviceId: selectedService.id,
-          startTime: selectedSlot,
-          amount: selectedService.price,
-          duration: selectedService.duration
-        });
-        
-        if (verifyRes.success) {
-          setStep(3); // Success step
-        } else {
-          throw new Error(verifyRes.error);
-        }
-        setProcessing(false);
-        return;
+      // 2. Redirect to Razorpay's Highly Secure Hosted Checkout
+      if (orderData.paymentLink) {
+        window.location.href = orderData.paymentLink;
+      } else {
+        throw new Error("Failed to generate secure payment link.");
       }
-
-      // 2. Open Razorpay Checkout
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: selectedService.price * 100,
-        currency: "INR",
-        name: "Kintsugi Wellness",
-        description: selectedService.title,
-        order_id: orderData.orderId,
-        handler: async function (response: any) {
-          // 3. Verify Payment
-          const verifyRes = await verifyAndCreateBooking({
-            ...response,
-            isMock: false
-          }, {
-            serviceId: selectedService.id,
-            startTime: selectedSlot,
-            amount: selectedService.price,
-            duration: selectedService.duration
-          });
-
-          if (verifyRes.success) {
-            setStep(3); // Success step
-          } else {
-            setError("Payment verification failed. Please contact support.");
-          }
-        },
-        theme: {
-          color: "#bd7532" // gold-600
-        }
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', function (response: any) {
-        setError(response.error.description || "Payment failed");
-      });
-      rzp.open();
       
     } catch (err: any) {
       setError(err.message || "Failed to process booking");
-    } finally {
-      setProcessing(false);
+      setProcessing(false); // Only set to false on error, otherwise let the redirect happen
     }
   };
 

@@ -22,17 +22,21 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, isMock } = paymentData;
 
     if (!isMock) {
-      // Verify signature
-      const secret = process.env.RAZORPAY_KEY_SECRET;
-      if (!secret) throw new Error("Razorpay secret not configured");
+      if (!paymentData.razorpay_payment_link_id) {
+        return { success: false, error: "Invalid payment callback" };
+      }
 
-      const generatedSignature = crypto
-        .createHmac("sha256", secret)
-        .update(razorpay_order_id + "|" + razorpay_payment_id)
-        .digest("hex");
+      const Razorpay = require('razorpay');
+      const instance = new Razorpay({
+        key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        key_secret: process.env.RAZORPAY_KEY_SECRET!,
+      });
 
-      if (generatedSignature !== razorpay_signature) {
-        return { success: false, error: "Payment verification failed" };
+      // Instead of fragile signature math, securely fetch the official link status
+      const link = await instance.paymentLink.fetch(paymentData.razorpay_payment_link_id);
+      
+      if (link.status !== 'paid') {
+        return { success: false, error: "Payment was not completed." };
       }
     }
 
