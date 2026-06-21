@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# screenshots (for personal reference)
+/screenshots
+
 # next.js
 /.next/
 /out/

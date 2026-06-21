@@ -32,11 +32,10 @@ export default function RootLayout({
         className={`${inter.variable} ${outfit.variable} antialiased bg-[var(--color-gold-50)] min-h-screen flex flex-col`}
       >
         <header className="fixed top-0 left-0 right-0 z-50 w-full py-6 px-8 flex items-center justify-between bg-[var(--color-gold-50)]/30 backdrop-blur-md border-b border-[var(--color-gold-200)]/30 transition-all">
-          <div className="text-2xl font-heading font-medium text-[var(--color-gold-900)]">
+          <a href="/" className="text-2xl font-heading font-medium text-[var(--color-gold-900)] hover:text-[var(--color-gold-700)] transition-colors">
             Kintsugi Wellness
-          </div>
+          </a>
           <nav className="hidden md:flex items-center gap-8 text-[var(--color-gold-800)]">
-            <a href="/" className="hover:text-[var(--color-gold-600)] transition-colors">Home</a>
             <a href="/about" className="hover:text-[var(--color-gold-600)] transition-colors">About</a>
             <a href="/services" className="hover:text-[var(--color-gold-600)] transition-colors">Services</a>
             <a href="/what-to-expect" className="hover:text-[var(--color-gold-600)] transition-colors">What to Expect</a>
