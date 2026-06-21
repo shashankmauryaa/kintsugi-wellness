@@ -56,6 +56,7 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
     // Create Google Calendar Event
     let googleCalendarEventId = null;
     let googleMeetLink = null;
+    let googleCalendarRewindEventId = null;
     try {
       const calendarId = process.env.GOOGLE_CALENDAR_ID;
       const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -111,7 +112,7 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
 
         // 2. Create the Rewind Time Block if configured
         if (REWIND_TIME_MINUTES > 0) {
-          await calendar.events.insert({
+          const rewindEvent = await calendar.events.insert({
             calendarId: calendarId,
             requestBody: {
               summary: `Rewind Time`,
@@ -126,6 +127,7 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
               colorId: '8' 
             }
           });
+          googleCalendarRewindEventId = rewindEvent.data.id || null;
         }
       }
     } catch (gcalError) {
@@ -159,6 +161,7 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
       endTime: endTime,
       status: "CONFIRMED",
       googleCalendarEventId: googleCalendarEventId,
+      googleCalendarRewindEventId: googleCalendarRewindEventId,
       googleMeetLink: googleMeetLink,
       createdAt: new Date(),
     };
@@ -217,5 +220,118 @@ export async function saveSessionNote(bookingId: string, note: string) {
   } catch (error: any) {
     console.error("Save note error:", error);
     return { success: false, error: error.message || "Failed to save note" };
+  }
+}
+
+export async function rescheduleBooking(bookingId: string, newStartTimeStr: string) {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session")?.value;
+  if (!session) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  try {
+    const decodedToken = await auth.verifySessionCookie(session, true);
+    const uid = decodedToken.uid;
+
+    const bookingRef = db.collection("bookings").doc(bookingId);
+    const bookingDoc = await bookingRef.get();
+
+    if (!bookingDoc.exists) {
+      return { success: false, error: "Booking not found" };
+    }
+
+    const bookingData = bookingDoc.data();
+    if (bookingData?.userId !== uid) {
+      return { success: false, error: "Unauthorized access to booking" };
+    }
+
+    const oldStartTime = bookingData.startTime.toDate();
+    const now = new Date();
+    
+    // Enforce 24-hour rule
+    const hoursUntilSession = (oldStartTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+    if (hoursUntilSession < 24) {
+      return { success: false, error: "Sessions can only be rescheduled up to 24 hours in advance." };
+    }
+
+    // Calculate new times
+    const durationMins = (bookingData.endTime.toMillis() - bookingData.startTime.toMillis()) / 60000;
+    const newStartTime = new Date(newStartTimeStr);
+    const newEndTime = new Date(newStartTime.getTime() + durationMins * 60000);
+    
+    const REWIND_TIME_MINUTES = 30; // Hardcoded matching the create booking logic
+    const newRewindEndTime = new Date(newEndTime.getTime() + REWIND_TIME_MINUTES * 60000);
+
+    // Update Google Calendar
+    const calendarId = process.env.GOOGLE_CALENDAR_ID;
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+
+    if (calendarId && clientId && clientSecret && refreshToken && bookingData.googleCalendarEventId) {
+      const { google } = require('googleapis');
+      const oauth2Client = new google.auth.OAuth2(
+        clientId, clientSecret, "https://developers.google.com/oauthplayground"
+      );
+      oauth2Client.setCredentials({ refresh_token: refreshToken });
+      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+
+      // Patch Main Event
+      await calendar.events.patch({
+        calendarId: calendarId,
+        eventId: bookingData.googleCalendarEventId,
+        sendUpdates: 'all',
+        requestBody: {
+          start: { dateTime: newStartTime.toISOString() },
+          end: { dateTime: newEndTime.toISOString() }
+        }
+      });
+
+      // Patch or Handle Rewind Event
+      if (bookingData.googleCalendarRewindEventId) {
+        await calendar.events.patch({
+          calendarId: calendarId,
+          eventId: bookingData.googleCalendarRewindEventId,
+          requestBody: {
+            start: { dateTime: newEndTime.toISOString() },
+            end: { dateTime: newRewindEndTime.toISOString() }
+          }
+        }).catch((err: any) => console.error("Failed to patch rewind event", err));
+      } else {
+        // Fallback for older bookings: Search for it and update/delete
+        const res = await calendar.events.list({
+          calendarId: calendarId,
+          timeMin: bookingData.endTime.toDate().toISOString(),
+          timeMax: new Date(bookingData.endTime.toMillis() + REWIND_TIME_MINUTES * 60000 + 5000).toISOString(),
+          q: "Rewind Time"
+        });
+        if (res.data.items && res.data.items.length > 0) {
+          const oldRewind = res.data.items[0];
+          await calendar.events.patch({
+            calendarId: calendarId,
+            eventId: oldRewind.id as string,
+            requestBody: {
+              start: { dateTime: newEndTime.toISOString() },
+              end: { dateTime: newRewindEndTime.toISOString() }
+            }
+          });
+          // Update firestore with the found ID for future
+          await bookingRef.update({ googleCalendarRewindEventId: oldRewind.id });
+        }
+      }
+    }
+
+    // Update Firestore
+    await bookingRef.update({
+      startTime: newStartTime,
+      endTime: newEndTime,
+      updatedAt: new Date()
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Reschedule error:", error);
+    return { success: false, error: error.message || "Failed to reschedule session" };
   }
 }

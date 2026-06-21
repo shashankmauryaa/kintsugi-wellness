@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Calendar, Clock, X, Loader2 } from "lucide-react";
 import { createPortal } from "react-dom";
-import { saveSessionNote } from "@/actions/booking";
+import { saveSessionNote, rescheduleBooking } from "@/actions/booking";
+import { format, addDays, startOfToday } from "date-fns";
 
 export default function PortalDashboard({ initialBookings, profileData }: { initialBookings: any[], profileData: any }) {
   const [now, setNow] = useState(new Date());
@@ -15,6 +16,19 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
   const [noteContent, setNoteContent] = useState("");
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [noteSaved, setNoteSaved] = useState(false);
+
+  // Rescheduling state
+  const [isRescheduling, setIsRescheduling] = useState(false);
+  const [rescheduleDate, setRescheduleDate] = useState<Date>(new Date());
+  const [rescheduleSlots, setRescheduleSlots] = useState<any[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [selectedRescheduleSlot, setSelectedRescheduleSlot] = useState<string | null>(null);
+  const [isReschedulingSubmit, setIsReschedulingSubmit] = useState(false);
+
+  // Initialize date strictly on client
+  useEffect(() => {
+    setRescheduleDate(startOfToday());
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -56,6 +70,52 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
       }, 1500);
     } else {
       alert("Failed to save note: " + result.error);
+    }
+  };
+
+  useEffect(() => {
+    if (isRescheduling && selectedUpcoming) {
+      const fetchSlots = async () => {
+        setLoadingSlots(true);
+        try {
+          const serviceId = selectedUpcoming.serviceId || "individual";
+          let duration = 60;
+          if (serviceId === "listening") duration = 30;
+          
+          const response = await fetch(`/api/calendar?date=${format(rescheduleDate, 'yyyy-MM-dd')}&duration=${duration}&ignoreBookingId=${selectedUpcoming.id}`);
+          const data = await response.json();
+          setRescheduleSlots(data.slots || []);
+        } catch (error) {
+          console.error("Failed to fetch slots", error);
+          setRescheduleSlots([]);
+        } finally {
+          setLoadingSlots(false);
+        }
+      };
+      fetchSlots();
+    }
+  }, [rescheduleDate, isRescheduling, selectedUpcoming]);
+
+  const handleRescheduleConfirm = async () => {
+    if (!selectedUpcoming || !selectedRescheduleSlot) return;
+    setIsReschedulingSubmit(true);
+    
+    const result = await rescheduleBooking(selectedUpcoming.id, selectedRescheduleSlot);
+    setIsReschedulingSubmit(false);
+    
+    if (result.success) {
+      // Update local state
+      const sessionIndex = initialBookings.findIndex(b => b.id === selectedUpcoming.id);
+      if (sessionIndex !== -1) {
+        const durationMins = (initialBookings[sessionIndex].endTime.getTime() - initialBookings[sessionIndex].startTime.getTime()) / 60000;
+        const newStart = new Date(selectedRescheduleSlot);
+        initialBookings[sessionIndex].startTime = newStart;
+        initialBookings[sessionIndex].endTime = new Date(newStart.getTime() + durationMins * 60000);
+      }
+      setIsRescheduling(false);
+      setSelectedUpcoming(null);
+    } else {
+      alert("Failed to reschedule: " + result.error);
     }
   };
 
@@ -168,13 +228,74 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative border border-[var(--color-gold-200)]">
             <button 
-              onClick={() => setSelectedUpcoming(null)}
+              onClick={() => {
+                setSelectedUpcoming(null);
+                setIsRescheduling(false);
+              }}
               className="absolute top-6 right-6 text-[var(--color-gold-500)] hover:text-[var(--color-gold-900)] transition-colors z-10"
             >
               <X size={24} />
             </button>
-            <h2 className="text-2xl font-heading text-[var(--color-gold-900)] mb-6">Session Details</h2>
+            <h2 className="text-2xl font-heading text-[var(--color-gold-900)] mb-6">
+              {isRescheduling ? "Reschedule Session" : "Session Details"}
+            </h2>
             
+            {isRescheduling ? (
+              <div className="space-y-4">
+                <p className="text-sm text-[var(--color-gold-600)] mb-4">Select a new date and time. You are rescheduling the session set for {selectedUpcoming.startTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at {selectedUpcoming.startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}.</p>
+                <div className="flex items-center justify-between mb-4 bg-[var(--color-gold-50)] p-2 rounded-xl border border-[var(--color-gold-200)]">
+                  <button onClick={() => setRescheduleDate(addDays(rescheduleDate, -1))} disabled={rescheduleDate <= startOfToday()} className="p-2 rounded-lg hover:bg-white disabled:opacity-50 text-[var(--color-gold-800)]">
+                    Prev
+                  </button>
+                  <div className="font-medium text-[var(--color-gold-900)] text-sm">
+                    {format(rescheduleDate, "EEEE, MMM d, yyyy")}
+                  </div>
+                  <button onClick={() => setRescheduleDate(addDays(rescheduleDate, 1))} className="p-2 rounded-lg hover:bg-white text-[var(--color-gold-800)]">
+                    Next
+                  </button>
+                </div>
+                
+                {loadingSlots ? (
+                  <div className="py-8 text-center text-[var(--color-gold-600)] flex justify-center"><Loader2 className="animate-spin" /></div>
+                ) : rescheduleSlots.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                    {rescheduleSlots.map((slot) => (
+                      <button
+                        key={slot.time}
+                        onClick={() => setSelectedRescheduleSlot(slot.time)}
+                        className={`p-2 rounded-xl border text-sm font-medium transition-all ${
+                          selectedRescheduleSlot === slot.time
+                            ? "border-[var(--color-gold-500)] bg-[var(--color-gold-100)] text-[var(--color-gold-900)] shadow-sm"
+                            : "border-[var(--color-gold-200)] hover:border-[var(--color-gold-400)] hover:bg-[var(--color-gold-50)] text-[var(--color-gold-700)]"
+                        }`}
+                      >
+                        {slot.label}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center text-[var(--color-gold-600)] bg-[var(--color-gold-50)] rounded-2xl border border-[var(--color-gold-200)] text-sm">
+                    No available slots on this date.
+                  </div>
+                )}
+                
+                <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-[var(--color-gold-200)]">
+                  <button 
+                    onClick={() => setIsRescheduling(false)}
+                    className="px-4 py-2 text-[var(--color-gold-700)] hover:bg-[var(--color-gold-50)] rounded-xl font-medium transition-colors text-sm"
+                  >
+                    Back
+                  </button>
+                  <button 
+                    onClick={handleRescheduleConfirm}
+                    disabled={!selectedRescheduleSlot || isReschedulingSubmit}
+                    className="px-6 py-2 bg-[var(--color-gold-700)] hover:bg-[var(--color-gold-800)] text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shadow-sm"
+                  >
+                    {isReschedulingSubmit ? <><Loader2 size={16} className="animate-spin"/> Confirming...</> : "Confirm Reschedule"}
+                  </button>
+                </div>
+              </div>
+            ) : (
             <div className="space-y-4">
               <div className="p-4 bg-[var(--color-gold-50)] rounded-2xl border border-[var(--color-gold-200)]">
                 <p className="text-xs text-[var(--color-gold-600)] uppercase tracking-wider font-bold mb-1">Date</p>
@@ -207,7 +328,20 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
                   </a>
                 </div>
               )}
+
+              <div className="mt-6 pt-4 border-t border-[var(--color-gold-200)] flex justify-end gap-3">
+                 {((selectedUpcoming.startTime.getTime() - now.getTime()) / (1000 * 60 * 60) > 24) && (
+                   <button onClick={() => {
+                     setRescheduleDate(startOfToday());
+                     setSelectedRescheduleSlot(null);
+                     setIsRescheduling(true);
+                   }} className="px-6 py-2 bg-[var(--color-gold-100)] text-[var(--color-gold-800)] rounded-xl text-sm font-medium hover:bg-[var(--color-gold-200)] transition-colors">
+                     Reschedule
+                   </button>
+                 )}
+              </div>
             </div>
+            )}
           </div>
         </div>,
         document.body

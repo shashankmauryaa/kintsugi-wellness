@@ -138,12 +138,16 @@ export default function About() {
                 </h4>
                 <div className="space-y-6">
                   <div className="border-l-2 border-[var(--color-gold-200)] pl-5 py-1">
-                    <div className="font-medium text-[var(--color-gold-900)] text-lg">Individual Counselling</div>
-                    <div className="text-[var(--color-gold-700)] mt-1.5">50–60 minutes</div>
+                    <div className="font-medium text-[var(--color-gold-900)] text-lg">Counselling</div>
+                    <div className="text-[var(--color-gold-700)] mt-1.5">60 minutes</div>
+                  </div>
+                  <div className="border-l-2 border-[var(--color-gold-200)] pl-5 py-1">
+                    <div className="font-medium text-[var(--color-gold-900)] text-lg">Listening Space Sessions</div>
+                    <div className="text-[var(--color-gold-700)] mt-1.5">30 minutes</div>
                   </div>
                   <div className="border-l-2 border-[var(--color-gold-200)] pl-5 py-1">
                     <div className="font-medium text-[var(--color-gold-900)] text-lg">Fees</div>
-                    <div className="text-[var(--color-gold-700)] mt-1.5 leading-relaxed">Session fees are discussed and agreed upon individually before beginning counselling. Payment is expected as mutually agreed.</div>
+                    <div className="text-[var(--color-gold-700)] mt-1.5 leading-relaxed">Session fees are to be paid before the session begins for booking the session slot.</div>
                   </div>
                 </div>
               </div>
@@ -158,11 +162,11 @@ export default function About() {
                 <div className="space-y-5">
                   <div className="bg-white p-6 rounded-3xl border border-[var(--color-gold-100)] shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-300">
                     <div className="font-medium text-[var(--color-gold-900)] text-lg mb-3">Rescheduling & Cancellation</div>
-                    <div className="text-[var(--color-gold-700)] leading-relaxed">If you need to cancel or reschedule a session, please try to inform me at least 24 hours in advance. Late cancellations or missed sessions may be charged unless there are exceptional circumstances.</div>
+                    <div className="text-[var(--color-gold-700)] leading-relaxed">If you need to cancel or reschedule a session, please try to reschedule through the website and inform me at least 24 hours in advance. Late cancellations or missed sessions may be charged unless there are exceptional circumstances.</div>
                   </div>
                   <div className="bg-white p-6 rounded-3xl border border-[var(--color-gold-100)] shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-300">
                     <div className="font-medium text-[var(--color-gold-900)] text-lg mb-3">Late Arrival</div>
-                    <div className="text-[var(--color-gold-700)] leading-relaxed">If a session begins late, it will still need to end at the originally scheduled time.</div>
+                    <div className="text-[var(--color-gold-700)] leading-relaxed">If a session begins late, it will still need to end at the originally scheduled time because of further upcoming sessions.</div>
                   </div>
                   <div className="bg-white p-6 rounded-3xl border border-[var(--color-gold-100)] shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-300">
                     <div className="font-medium text-[var(--color-gold-900)] text-lg mb-3">Between-Session Communication</div>

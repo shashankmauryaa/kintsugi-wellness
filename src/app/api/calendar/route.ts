@@ -1,17 +1,21 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
 import { addDays, startOfDay, endOfDay, isWeekend, isBefore, isAfter, parseISO } from 'date-fns';
+import { db } from '@/lib/firebase-admin';
 
 // In a real scenario, Khushi would define her working hours
 const WORKING_HOURS = {
-  start: 10, // 10:00 AM
-  end: 18,   // 6:00 PM
+  startHour: 10,
+  startMinute: 0,
+  endHour: 19,
+  endMinute: 30, // 7:30 PM
 };
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const dateStr = searchParams.get('date');
   const durationParam = searchParams.get('duration');
+  const ignoreBookingId = searchParams.get('ignoreBookingId');
   
   if (!dateStr) {
     return NextResponse.json({ error: 'Date is required' }, { status: 400 });
@@ -45,6 +49,21 @@ export async function GET(request: Request) {
   const timeMax = endOfDay(requestedDate).toISOString();
 
   try {
+    let ignoreStart: Date | null = null;
+    let ignoreEnd: Date | null = null;
+
+    if (ignoreBookingId) {
+      const bookingDoc = await db.collection('bookings').doc(ignoreBookingId).get();
+      if (bookingDoc.exists) {
+        const bookingData = bookingDoc.data();
+        ignoreStart = bookingData?.startTime.toDate() || null;
+        if (ignoreStart && bookingData?.endTime) {
+           const endT = bookingData.endTime.toDate();
+           ignoreEnd = new Date(endT.getTime() + 30 * 60000); // Add rewind time
+        }
+      }
+    }
+
     const response = await calendar.freebusy.query({
       requestBody: {
         timeMin,
@@ -54,7 +73,7 @@ export async function GET(request: Request) {
     });
 
     const busySlots = response.data.calendars?.[calendarId]?.busy || [];
-    const availableSlots = generateAvailableSlots(dateStr, busySlots, duration);
+    const availableSlots = generateAvailableSlots(dateStr, busySlots, duration, ignoreStart, ignoreEnd);
 
     return NextResponse.json({ slots: availableSlots, isMock: false });
   } catch (error) {
@@ -64,15 +83,17 @@ export async function GET(request: Request) {
 }
 
 // Helper to generate available slots based on working hours and busy periods
-function generateAvailableSlots(dateStr: string, busySlots: any[], durationMinutes: number) {
+function generateAvailableSlots(dateStr: string, busySlots: any[], durationMinutes: number, ignoreStart?: Date | null, ignoreEnd?: Date | null) {
   // We explicitly construct the date object using the IST timezone offset (+05:30)
   // This guarantees that regardless of where the server is physically located (Vercel uses UTC),
   // the slots start at exactly 10:00 AM and end at exactly 6:00 PM Indian Standard Time.
-  const startHourStr = WORKING_HOURS.start.toString().padStart(2, '0');
-  const endHourStr = WORKING_HOURS.end.toString().padStart(2, '0');
+  const startHourStr = WORKING_HOURS.startHour.toString().padStart(2, '0');
+  const startMinStr = WORKING_HOURS.startMinute.toString().padStart(2, '0');
+  const endHourStr = WORKING_HOURS.endHour.toString().padStart(2, '0');
+  const endMinStr = WORKING_HOURS.endMinute.toString().padStart(2, '0');
   
-  const startSlotStr = `${dateStr}T${startHourStr}:00:00+05:30`;
-  const endSlotStr = `${dateStr}T${endHourStr}:00:00+05:30`;
+  const startSlotStr = `${dateStr}T${startHourStr}:${startMinStr}:00+05:30`;
+  const endSlotStr = `${dateStr}T${endHourStr}:${endMinStr}:00+05:30`;
   
   let currentSlot = new Date(startSlotStr);
   const endOfDayWindow = new Date(endSlotStr);
@@ -122,10 +143,18 @@ function generateAvailableSlots(dateStr: string, busySlots: any[], durationMinut
       const startWithBuffer = new Date(currentSlot.getTime() + 60000); // +1 min
       const endWithBuffer = new Date(slotEnd.getTime() - 60000);       // -1 min
 
-      return (
-        isBefore(startWithBuffer, busyEnd) &&
-        isAfter(endWithBuffer, busyStart)
-      );
+      const overlaps = isBefore(startWithBuffer, busyEnd) && isAfter(endWithBuffer, busyStart);
+
+      if (overlaps && ignoreStart && ignoreEnd) {
+        const overlapStart = startWithBuffer > busyStart ? startWithBuffer : busyStart;
+        const overlapEnd = endWithBuffer < busyEnd ? endWithBuffer : busyEnd;
+        
+        if (overlapStart >= ignoreStart && overlapEnd <= ignoreEnd) {
+          return false; // The overlap is fully inside the ignored event, so it's not busy
+        }
+      }
+
+      return overlaps;
     });
 
     if (!isBusy) {
@@ -143,5 +172,5 @@ function generateAvailableSlots(dateStr: string, busySlots: any[], durationMinut
 }
 
 function mockAvailableSlots(dateStr: string, durationMinutes: number) {
-  return generateAvailableSlots(dateStr, [], durationMinutes); // Generate all slots assuming no busy times
+  return generateAvailableSlots(dateStr, [], durationMinutes, null, null); // Generate all slots assuming no busy times
 }
