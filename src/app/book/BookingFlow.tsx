@@ -9,7 +9,7 @@ import { Calendar as CalendarIcon, Clock, CreditCard, ChevronRight, CheckCircle2
 
 
 const SERVICES = [
-  { id: "individual", title: "Individual Counselling", price: 1500, duration: 60 },
+  { id: "individual", title: "Individual Counselling", price: 1, duration: 60 },
   { id: "student", title: "Student Counselling", price: 1000, duration: 60 },
   { id: "listening", title: "Listening Space Session", price: 600, duration: 30 },
 ];
