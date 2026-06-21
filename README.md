@@ -37,7 +37,32 @@ The platform's aesthetic is heavily inspired by the Japanese art of **Kintsugi**
 
 ## ⚙️ Getting Started
 
-First, ensure your environment variables are correctly set up (Firebase Admin credentials, Razorpay keys, etc.).
+First, ensure your environment variables are correctly set up. Create a `.env.local` file in the root directory with the following variables:
+
+### Required Environment Variables
+
+**Firebase Admin (Backend)**
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_CLIENT_EMAIL`
+- `FIREBASE_PRIVATE_KEY`
+
+**Firebase Client SDK (Frontend)**
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- `NEXT_PUBLIC_FIREBASE_API_KEY`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+- `NEXT_PUBLIC_FIREBASE_APP_ID`
+
+**Google Calendar & Meet (OAuth2)**
+- `GOOGLE_CALENDAR_ID` (e.g. your therapy email address)
+- `GOOGLE_CLIENT_ID` (From Google Cloud Console)
+- `GOOGLE_CLIENT_SECRET` (From Google Cloud Console)
+- `GOOGLE_REFRESH_TOKEN` (From Google OAuth Playground)
+
+**Razorpay Integration**
+- `NEXT_PUBLIC_RAZORPAY_KEY_ID`
+- `RAZORPAY_KEY_SECRET`
 
 Then, run the development server:
 

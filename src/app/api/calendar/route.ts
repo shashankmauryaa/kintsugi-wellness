@@ -131,7 +131,7 @@ function generateAvailableSlots(dateStr: string, busySlots: any[], durationMinut
     if (!isBusy) {
       slots.push({
         time: currentSlot.toISOString(),
-        label: currentSlot.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        label: currentSlot.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })
       });
     }
 
