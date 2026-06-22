@@ -34,6 +34,10 @@ export default function BookingFlow() {
 
   // Fetch Slots
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
+
+  useEffect(() => {
     async function fetchSlots() {
       setLoadingSlots(true);
       setError(null);

@@ -3,6 +3,7 @@ import { Inter, Outfit } from "next/font/google";
 import { Mail, Phone, MessageSquare } from "lucide-react";
 import LegalModals from "@/components/LegalModals";
 import FaqLink from "@/components/FaqLink";
+import ScrollToTop from "@/components/ScrollToTop";
 import "./globals.css";
 
 const inter = Inter({
@@ -49,6 +50,7 @@ export default function RootLayout({
         </header>
 
         <main className="flex-1 flex flex-col pt-[88px]">
+          <ScrollToTop />
           {children}
         </main>
 

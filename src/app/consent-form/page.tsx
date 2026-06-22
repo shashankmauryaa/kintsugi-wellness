@@ -12,6 +12,10 @@ export default function ConsentForm() {
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
+
   // Form State
   const [formData, setFormData] = useState({
     ack1: false,
