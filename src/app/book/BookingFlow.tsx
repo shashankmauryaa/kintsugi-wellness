@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { format, addDays, startOfToday } from "date-fns";
+import { format, addDays, startOfToday, isSameDay } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { verifyAndCreateBooking } from "@/actions/booking";
 import { Calendar as CalendarIcon, Clock, CreditCard, ChevronRight, CheckCircle2 } from "lucide-react";
@@ -42,6 +42,14 @@ export default function BookingFlow() {
       setLoadingSlots(true);
       setError(null);
       try {
+        // Prevent same-day booking for offline sessions
+        if (mode === "offline" && isSameDay(selectedDate, startOfToday())) {
+          setAvailableSlots([]);
+          setSelectedSlot(null);
+          setLoadingSlots(false);
+          return;
+        }
+
         const dateStr = format(selectedDate, "yyyy-MM-dd");
         const res = await fetch(`/api/calendar?date=${dateStr}&duration=${selectedService.duration}`);
         const data = await res.json();
@@ -57,7 +65,7 @@ export default function BookingFlow() {
     }
     
     fetchSlots();
-  }, [selectedDate, selectedService.duration]);
+  }, [selectedDate, selectedService.duration, mode]);
 
   const handleDateChange = (daysToAdd: number) => {
     setSelectedDate(addDays(selectedDate, daysToAdd));
