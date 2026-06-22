@@ -81,30 +81,40 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
         if (bookingDetails.serviceId === "student") serviceName = "Student Counselling";
         if (bookingDetails.serviceId === "listening") serviceName = "Listening Space Session";
 
+        const eventPayload: any = {
+          summary: serviceName,
+          description: `Thank you for booking a session. I look forward to meeting with you.\n\nI hope to offer a space that feels thoughtful, supportive, and open to whatever you may be bringing with you. Sessions are approximately 50-60 minutes long. You'll receive further details once your booking is confirmed.\n\nIf you need to cancel or reschedule, please try to let me know at least a day in advance. Of course, I understand that unexpected emergencies can arise, and we can work around those situations as needed.\n`,
+          start: {
+            dateTime: startTime.toISOString(),
+          },
+          end: {
+            dateTime: endTime.toISOString(),
+          },
+          attendees: [
+            { email: userEmail }
+          ],
+        };
+
+        if (bookingDetails.mode === "offline") {
+          let locString = "Christ University, Bengaluru";
+          if (bookingDetails.offlineLocation === "clinic") locString = "At a Clinic";
+          if (bookingDetails.offlineLocation === "discuss") locString = "To be discussed personally";
+          eventPayload.location = locString;
+        } else {
+          eventPayload.conferenceData = {
+            createRequest: {
+              requestId: crypto.randomBytes(10).toString('hex'),
+              conferenceSolutionKey: { type: 'hangoutsMeet' }
+            }
+          };
+        }
+
         // 1. Create the Main Therapy Session
         const event = await calendar.events.insert({
           calendarId: calendarId,
           sendUpdates: 'all', // Send invite to client
-          conferenceDataVersion: 1, // Generate Meet link
-          requestBody: {
-            summary: serviceName,
-            description: `Thank you for booking a session. I look forward to meeting with you.\n\nI hope to offer a space that feels thoughtful, supportive, and open to whatever you may be bringing with you. Sessions are approximately 50-60 minutes long and will be held online. You'll receive the meeting details once your booking is confirmed.\n\nIf you need to cancel or reschedule, please try to let me know at least a day in advance. Of course, I understand that unexpected emergencies can arise, and we can work around those situations as needed.\n`,
-            start: {
-              dateTime: startTime.toISOString(),
-            },
-            end: {
-              dateTime: endTime.toISOString(),
-            },
-            attendees: [
-              { email: userEmail }
-            ],
-            conferenceData: {
-              createRequest: {
-                requestId: crypto.randomBytes(10).toString('hex'),
-                conferenceSolutionKey: { type: 'hangoutsMeet' }
-              }
-            }
-          }
+          conferenceDataVersion: bookingDetails.mode === "offline" ? 0 : 1, 
+          requestBody: eventPayload
         });
 
         googleCalendarEventId = event.data.id;
@@ -163,6 +173,8 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
       googleCalendarEventId: googleCalendarEventId,
       googleCalendarRewindEventId: googleCalendarRewindEventId,
       googleMeetLink: googleMeetLink,
+      mode: bookingDetails.mode || "online",
+      offlineLocation: bookingDetails.offlineLocation || null,
       createdAt: new Date(),
     };
 

@@ -11,9 +11,7 @@ export function proxy(request: NextRequest) {
   );
 
   if (isProtectedRoute && !session) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   // Prevent logged-in users from accessing the login page

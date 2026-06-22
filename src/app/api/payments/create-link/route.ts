@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const userEmail = decodedToken.email || "";
 
     const body = await request.json();
-    const { serviceId, startTime, amount, title } = body;
+    const { serviceId, startTime, amount, title, mode, offlineLocation } = body;
 
     const isDev = process.env.NODE_ENV === 'development';
     const baseUrl = isDev ? 'http://localhost:3000' : 'https://kintsugi-wellness.vercel.app';
@@ -39,6 +39,8 @@ export async function POST(request: Request) {
     callbackUrl.searchParams.set('serviceId', serviceId);
     callbackUrl.searchParams.set('startTime', startTime);
     callbackUrl.searchParams.set('amount', amount.toString());
+    if (mode) callbackUrl.searchParams.set('mode', mode);
+    if (offlineLocation) callbackUrl.searchParams.set('offlineLocation', offlineLocation);
 
     // Create the Payment Link
     const options = {

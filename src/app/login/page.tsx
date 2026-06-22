@@ -15,7 +15,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirect") || "/portal";
+  const redirectPath = "/portal";
 
   const handleAuthSuccess = async (idToken: string) => {
     const result = await createSession(idToken);

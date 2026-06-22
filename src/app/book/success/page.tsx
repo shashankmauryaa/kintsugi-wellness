@@ -18,6 +18,8 @@ function SuccessContent() {
   const startTime = searchParams.get("startTime");
   const amount = searchParams.get("amount");
   const mock = searchParams.get("mock");
+  const mode = searchParams.get("mode");
+  const offlineLocation = searchParams.get("offlineLocation");
   
   const razorpay_payment_id = searchParams.get("razorpay_payment_id");
   const razorpay_payment_link_id = searchParams.get("razorpay_payment_link_id");
@@ -55,7 +57,9 @@ function SuccessContent() {
           serviceId,
           startTime,
           amount: parseInt(amount || "0"),
-          duration: serviceId === "listening" ? 30 : 60
+          duration: serviceId === "listening" ? 30 : 60,
+          mode: mode || "online",
+          offlineLocation: offlineLocation || "christ"
         });
 
         if (verifyRes.success) {

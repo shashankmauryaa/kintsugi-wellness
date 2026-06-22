@@ -315,7 +315,7 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
                 </div>
               </div>
               
-              {selectedUpcoming.googleMeetLink && (
+              {selectedUpcoming.googleMeetLink ? (
                 <div className="p-4 bg-[var(--color-gold-50)] rounded-2xl border border-[var(--color-gold-200)]">
                   <p className="text-xs text-[var(--color-gold-600)] uppercase tracking-wider font-bold mb-3">Location</p>
                   <a 
@@ -327,7 +327,15 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
                     Join Google Meet
                   </a>
                 </div>
-              )}
+              ) : selectedUpcoming.mode === "offline" ? (
+                <div className="p-4 bg-[var(--color-gold-50)] rounded-2xl border border-[var(--color-gold-200)]">
+                  <p className="text-xs text-[var(--color-gold-600)] uppercase tracking-wider font-bold mb-3">Location</p>
+                  <div className="w-full py-3 bg-[var(--color-gold-100)] text-[var(--color-gold-900)] rounded-xl font-medium flex items-center justify-center gap-2 shadow-sm border border-[var(--color-gold-200)] text-center px-4">
+                    {selectedUpcoming.offlineLocation === "christ" ? "Christ University, Bengaluru" : 
+                     selectedUpcoming.offlineLocation === "clinic" ? "At a Clinic" : "To be discussed personally"}
+                  </div>
+                </div>
+              ) : null}
 
               <div className="mt-6 pt-4 border-t border-[var(--color-gold-200)] flex justify-end gap-3">
                  {((selectedUpcoming.startTime.getTime() - now.getTime()) / (1000 * 60 * 60) > 24) && (

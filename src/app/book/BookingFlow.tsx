@@ -24,6 +24,8 @@ export default function BookingFlow() {
   const [selectedDate, setSelectedDate] = useState<Date>(startOfToday());
   const [availableSlots, setAvailableSlots] = useState<{time: string, label: string}[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [mode, setMode] = useState<"online" | "offline">("online");
+  const [offlineLocation, setOfflineLocation] = useState<"christ" | "clinic" | "discuss">("christ");
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +74,8 @@ export default function BookingFlow() {
           startTime: selectedSlot,
           amount: selectedService.price,
           title: selectedService.title,
+          mode,
+          offlineLocation
         }),
       });
       const orderData = await orderRes.json();
@@ -134,6 +138,56 @@ export default function BookingFlow() {
                   <div className="text-sm text-[var(--color-gold-600)]">₹{s.price} • {s.duration} mins</div>
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="p-5 rounded-2xl border border-[var(--color-gold-200)] mb-6 bg-white transition-all shadow-sm">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h3 className="font-medium text-[var(--color-gold-900)] text-lg">Session Mode</h3>
+                
+                <div className="flex items-center gap-4">
+                  <span className={`text-sm font-medium transition-opacity cursor-pointer text-[var(--color-gold-900)] ${mode === "online" ? "opacity-100" : "opacity-40"}`} onClick={() => setMode("online")}>
+                    Online via Google Meet
+                  </span>
+                  
+                  <button
+                    onClick={() => setMode(mode === "online" ? "offline" : "online")}
+                    className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors flex-shrink-0 ${mode === "offline" ? "bg-[var(--color-gold-600)]" : "bg-[var(--color-gold-300)]"}`}
+                    aria-label="Toggle offline mode"
+                  >
+                    <span
+                      className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm ${mode === "offline" ? "translate-x-7" : "translate-x-1"}`}
+                    />
+                  </button>
+
+                  <span className={`text-sm font-medium transition-opacity cursor-pointer text-[var(--color-gold-900)] ${mode === "offline" ? "opacity-100" : "opacity-40"}`} onClick={() => setMode("offline")}>
+                    Offline, In-Person
+                  </span>
+                </div>
+              </div>
+              
+              {mode === "offline" && (
+                <div className="mt-6 pt-5 border-t border-[var(--color-gold-100)] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <h3 className="font-medium text-[var(--color-gold-900)] text-lg">Select Location</h3>
+                  <div className="relative w-full md:w-88">
+                    <select 
+                      value={offlineLocation}
+                      onChange={(e) => setOfflineLocation(e.target.value as any)}
+                      className="w-full px-5 py-3 rounded-xl border border-[var(--color-gold-200)] focus:outline-none focus:border-[var(--color-gold-400)] focus:ring-1 focus:ring-[var(--color-gold-400)] transition-all text-[var(--color-gold-900)] bg-white appearance-none text-sm font-medium"
+                    >
+                      <option value="christ">Christ University, Bengaluru</option>
+                      <option value="clinic">At a Clinic</option>
+                      <option value="discuss">Discuss Personally</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-[var(--color-gold-800)]">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -226,7 +280,13 @@ export default function BookingFlow() {
             )}
           </div>
 
-          <div className="flex justify-end pt-6 border-t border-[var(--color-gold-200)]">
+          <div className="flex justify-between pt-6 border-t border-[var(--color-gold-200)]">
+            <button
+              onClick={() => router.push("/portal")}
+              className="px-6 py-2 border border-[var(--color-gold-300)] text-[var(--color-gold-800)] rounded-full font-medium hover:bg-[var(--color-gold-50)] transition-colors"
+            >
+              Back to Dashboard
+            </button>
             <button 
               onClick={() => setStep(2)}
               disabled={!selectedSlot}
@@ -251,6 +311,14 @@ export default function BookingFlow() {
                 <span>Date & Time</span>
                 <span className="font-medium text-[var(--color-gold-900)]">
                   {selectedSlot && `${format(new Date(selectedSlot), "MMM d, yyyy - h:mm a")} to ${format(new Date(new Date(selectedSlot).getTime() + selectedService.duration * 60000), "h:mm a")}`}
+                </span>
+              </div>
+              <div className="flex justify-between border-b border-[var(--color-gold-200)] pb-3 pt-2">
+                <span>Location</span>
+                <span className="font-medium text-[var(--color-gold-900)] text-right">
+                  {mode === "online" ? "Online (Google Meet)" : 
+                    offlineLocation === "christ" ? "Christ University, Bengaluru" : 
+                    offlineLocation === "clinic" ? "At a Clinic" : "To be discussed personally"}
                 </span>
               </div>
               <div className="flex justify-between pt-2">
