@@ -49,7 +49,7 @@ export default async function ClientPortal() {
   }
 
   if (shouldRedirect) {
-    redirect("/login?redirect=/portal");
+    redirect("/login?clear_session=1&redirect=/portal");
   }
 
   return (

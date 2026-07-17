@@ -18,12 +18,17 @@ export default async function PortalLayout({
   }
 
   let userRecord;
+  let shouldRedirect = false;
   try {
     const decodedToken = await auth.verifySessionCookie(session, true);
     userRecord = await auth.getUser(decodedToken.uid);
   } catch (error) {
     console.error("Portal Layout Error:", error);
-    redirect("/login");
+    shouldRedirect = true;
+  }
+
+  if (shouldRedirect) {
+    redirect("/login?clear_session=1&redirect=/portal");
   }
 
   return (

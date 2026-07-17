@@ -31,7 +31,7 @@ export default async function BookSession() {
   }
 
   if (shouldRedirect) {
-    redirect("/login?redirect=/book");
+    redirect("/login?clear_session=1&redirect=/book");
   }
 
   if (!profileDoc?.exists || !profileData?.hasActiveConsent) {

@@ -16,6 +16,12 @@ export function proxy(request: NextRequest) {
 
   // Prevent logged-in users from accessing the login page
   if (session && request.nextUrl.pathname.startsWith('/login')) {
+    // If the server tells us to clear the session (e.g. it expired), do so
+    if (request.nextUrl.searchParams.get('clear_session') === '1') {
+      const response = NextResponse.next();
+      response.cookies.delete('session');
+      return response;
+    }
     return NextResponse.redirect(new URL('/portal', request.url));
   }
 
