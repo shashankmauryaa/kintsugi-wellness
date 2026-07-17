@@ -14,6 +14,8 @@ export default async function ClientPortal() {
   let userRecord;
   let profileData;
   let bookings: any[] = [];
+  let shouldRedirect = false;
+
   try {
     const decodedToken = await auth.verifySessionCookie(session, true);
     userRecord = await auth.getUser(decodedToken.uid);
@@ -43,6 +45,10 @@ export default async function ClientPortal() {
     });
   } catch (error: any) {
     console.error("Portal Error:", error);
+    shouldRedirect = true;
+  }
+
+  if (shouldRedirect) {
     redirect("/login?redirect=/portal");
   }
 

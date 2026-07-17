@@ -16,6 +16,8 @@ export default async function BookSession() {
   let profileData: any = null;
   let profileDoc: any = null;
 
+  let shouldRedirect = false;
+
   try {
     const decodedToken = await auth.verifySessionCookie(session, true);
     uid = decodedToken.uid;
@@ -25,6 +27,10 @@ export default async function BookSession() {
     profileData = profileDoc.data();
   } catch (error: any) {
     console.error("Booking Init Error:", error);
+    shouldRedirect = true;
+  }
+
+  if (shouldRedirect) {
     redirect("/login?redirect=/book");
   }
 
