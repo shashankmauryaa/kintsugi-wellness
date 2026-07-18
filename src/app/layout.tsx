@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
-import { Mail, Phone, MessageSquare, User } from "lucide-react";
+import { Mail, Phone, MessageSquare } from "lucide-react";
 import LegalModals from "@/components/LegalModals";
 import FaqLink from "@/components/FaqLink";
 import ScrollToTop from "@/components/ScrollToTop";
+import AuthNav from "@/components/AuthNav";
 import "./globals.css";
 
 const inter = Inter({
@@ -42,11 +43,7 @@ export default function RootLayout({
             <a href="/what-to-expect" className="hover:text-[var(--color-gold-600)] transition-colors">What to Expect</a>
             <a href="/contact" className="hover:text-[var(--color-gold-600)] transition-colors">Contact</a>
           </nav>
-          <div className="flex items-center gap-4">
-            <a href="/portal" className="bg-[var(--color-gold-600)] hover:bg-[var(--color-gold-700)] text-white w-10 h-10 flex items-center justify-center rounded-full transition-all shadow-sm" aria-label="Client Portal">
-              <User size={20} />
-            </a>
-          </div>
+          <AuthNav />
         </header>
 
         <main className="flex-1 flex flex-col pt-[88px]">
