@@ -124,7 +124,7 @@ export default async function TherapistClientsPage() {
             <p className="text-[var(--color-gold-700)]">No clients have booked sessions or selected you yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6">
             {clients.map(client => (
               <ClientCard key={client.id} client={client} />
             ))}
