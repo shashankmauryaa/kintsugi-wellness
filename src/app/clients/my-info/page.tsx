@@ -8,7 +8,7 @@ export default async function MyInfoPage() {
   const session = cookieStore.get("session")?.value;
   
   if (!session) {
-    redirect("/login?redirect=/portal/my-info");
+    redirect("/login?redirect=/clients/my-info");
   }
 
   let userRecord;

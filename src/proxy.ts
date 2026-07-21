@@ -5,7 +5,7 @@ export function proxy(request: NextRequest) {
   const session = request.cookies.get('session');
 
   // Protect the following routes
-  const protectedRoutes = ['/book', '/consent-form', '/portal', '/admin'];
+  const protectedRoutes = ['/book', '/consent-form', '/clients', '/therapists'];
   const isProtectedRoute = protectedRoutes.some(route => 
     request.nextUrl.pathname.startsWith(route)
   );
@@ -22,12 +22,12 @@ export function proxy(request: NextRequest) {
       response.cookies.delete('session');
       return response;
     }
-    return NextResponse.redirect(new URL('/portal', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/book/:path*', '/consent-form/:path*', '/portal/:path*', '/admin/:path*', '/login'],
+  matcher: ['/book/:path*', '/consent-form/:path*', '/clients/:path*', '/therapists/:path*', '/login'],
 };

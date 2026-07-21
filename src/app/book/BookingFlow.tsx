@@ -14,14 +14,15 @@ const SERVICES = [
   { id: "listening", title: "Listening Space Session", price: 600, duration: 30 },
 ];
 
-export default function BookingFlow() {
+export default function BookingFlow({ defaultTherapistId }: { defaultTherapistId?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialService = searchParams.get("service") || "individual";
+  const therapistId = searchParams.get("therapist") || defaultTherapistId || "unknown";
 
   const [step, setStep] = useState(1);
   const [selectedService, setSelectedService] = useState(SERVICES.find(s => s.id === initialService) || SERVICES[0]);
-  const [selectedDate, setSelectedDate] = useState<Date>(startOfToday());
+  const [selectedDate, setSelectedDate] = useState<Date>(addDays(startOfToday(), 1));
   const [availableSlots, setAvailableSlots] = useState<{time: string, label: string}[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [mode, setMode] = useState<"online" | "offline">("online");
@@ -87,7 +88,8 @@ export default function BookingFlow() {
           amount: selectedService.price,
           title: selectedService.title,
           mode,
-          offlineLocation
+          offlineLocation,
+          therapistId
         }),
       });
       const orderData = await orderRes.json();
@@ -118,7 +120,7 @@ export default function BookingFlow() {
           Your session for {format(new Date(selectedSlot!), "MMMM d, yyyy 'at' h:mm a")} to {format(new Date(new Date(selectedSlot!).getTime() + selectedService.duration * 60000), "h:mm a")} has been successfully booked. You will receive a confirmation email shortly.
         </p>
         <button 
-          onClick={() => router.push("/portal")}
+          onClick={() => router.push("/clients")}
           className="px-8 py-3 bg-[var(--color-gold-700)] text-white rounded-full font-medium hover:bg-[var(--color-gold-800)]"
         >
           Go to Dashboard
@@ -294,7 +296,7 @@ export default function BookingFlow() {
 
           <div className="flex justify-between pt-6 border-t border-[var(--color-gold-200)]">
             <button
-              onClick={() => router.push("/portal")}
+              onClick={() => router.push("/clients")}
               className="px-6 py-2 border border-[var(--color-gold-300)] text-[var(--color-gold-800)] rounded-full font-medium hover:bg-[var(--color-gold-50)] transition-colors"
             >
               Back to Dashboard

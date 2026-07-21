@@ -22,6 +22,7 @@ export async function submitConsentForm(formData: any) {
       userId: uid,
       version: "1.0",
       pdfUrl: null, // To be generated
+      therapistId: formData.therapistId,
       signature: formData.signature,
       emergencyContact: formData.emergencyContact,
       clientDetails: {
@@ -40,6 +41,7 @@ export async function submitConsentForm(formData: any) {
       phone: formData.phone,
       emergencyContact: formData.emergencyContact,
       hasActiveConsent: true,
+      therapistId: formData.therapistId,
       updatedAt: new Date()
     }, { merge: true });
 

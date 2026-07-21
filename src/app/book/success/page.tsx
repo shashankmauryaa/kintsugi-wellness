@@ -20,6 +20,7 @@ function SuccessContent() {
   const mock = searchParams.get("mock");
   const mode = searchParams.get("mode");
   const offlineLocation = searchParams.get("offlineLocation");
+  const therapistId = searchParams.get("therapistId");
   
   const razorpay_payment_id = searchParams.get("razorpay_payment_id");
   const razorpay_payment_link_id = searchParams.get("razorpay_payment_link_id");
@@ -59,7 +60,8 @@ function SuccessContent() {
           amount: parseInt(amount || "0"),
           duration: serviceId === "listening" ? 30 : 60,
           mode: mode || "online",
-          offlineLocation: offlineLocation || "christ"
+          offlineLocation: offlineLocation || "christ",
+          therapistId: therapistId || "unknown"
         });
 
         if (verifyRes.success) {
@@ -123,7 +125,7 @@ function SuccessContent() {
       <p className="text-[var(--color-gold-800)] mb-8 max-w-md mx-auto">
         Your session for {format(new Date(startTime!), "MMMM d, yyyy 'at' h:mm a")} to {format(new Date(new Date(startTime!).getTime() + duration * 60000), "h:mm a")} has been successfully booked. You will receive a calendar invite shortly.
       </p>
-      <Link href="/portal" className="px-8 py-3 bg-[var(--color-gold-700)] text-white rounded-full font-medium hover:bg-[var(--color-gold-800)] transition-colors">
+      <Link href="/clients" className="px-8 py-3 bg-[var(--color-gold-700)] text-white rounded-full font-medium hover:bg-[var(--color-gold-800)] transition-colors">
         Go to Dashboard
       </Link>
     </div>

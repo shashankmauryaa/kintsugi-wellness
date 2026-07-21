@@ -47,7 +47,7 @@ export default async function BookSession() {
         </p>
         
         <Suspense fallback={<div className="p-12 text-center text-[var(--color-gold-600)]">Loading booking calendar...</div>}>
-          <BookingFlow />
+          <BookingFlow defaultTherapistId={profileData?.therapistId} />
         </Suspense>
       </div>
     </div>

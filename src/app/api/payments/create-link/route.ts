@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const userEmail = decodedToken.email || "";
 
     const body = await request.json();
-    const { serviceId, startTime, amount, title, mode, offlineLocation } = body;
+    const { serviceId, startTime, amount, title, mode, offlineLocation, therapistId } = body;
 
     const isDev = process.env.NODE_ENV === 'development';
     const baseUrl = isDev ? 'http://localhost:3000' : 'https://kintsugi-wellness.vercel.app';
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
       return NextResponse.json({ 
         isMock: true, 
-        paymentLink: `${baseUrl}/book/success?mock=true&serviceId=${serviceId}&startTime=${encodeURIComponent(startTime)}&amount=${amount}`,
+        paymentLink: `${baseUrl}/book/success?mock=true&serviceId=${serviceId}&startTime=${encodeURIComponent(startTime)}&amount=${amount}&therapistId=${therapistId || 'unknown'}`,
         message: 'Razorpay keys not configured. Redirecting to mock success page.'
       });
     }
@@ -41,6 +41,7 @@ export async function POST(request: Request) {
     callbackUrl.searchParams.set('amount', amount.toString());
     if (mode) callbackUrl.searchParams.set('mode', mode);
     if (offlineLocation) callbackUrl.searchParams.set('offlineLocation', offlineLocation);
+    if (therapistId) callbackUrl.searchParams.set('therapistId', therapistId);
 
     // Create the Payment Link
     const options = {

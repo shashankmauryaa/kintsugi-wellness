@@ -84,7 +84,7 @@ export default function RootLayout({
               <h3 className="text-xs font-bold tracking-widest text-[#8a7258] uppercase mb-6">Pages</h3>
               <nav className="flex flex-col gap-4">
                 <a href="/" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">Home</a>
-                <a href="/about" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">About Counsellor</a>
+                <a href="/about" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">About Us</a>
                 <a href="/services" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">Services</a>
                 <a href="/what-to-expect" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">What to Expect</a>
                 <FaqLink />
@@ -96,7 +96,7 @@ export default function RootLayout({
               <h3 className="text-xs font-bold tracking-widest text-[#8a7258] uppercase mb-6">Get Started</h3>
               <nav className="flex flex-col gap-4">
                 <a href="/book" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">Book a Session</a>
-                <a href="/portal" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">Client Portal</a>
+                <a href="/clients" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">Client Portal</a>
                 <a href="/consent-form" className="text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">Consent Forms</a>
               </nav>
             </div>
@@ -105,11 +105,11 @@ export default function RootLayout({
             <div>
               <h3 className="text-xs font-bold tracking-widest text-[#8a7258] uppercase mb-6">Reach Out</h3>
               <div className="flex flex-col gap-4">
-                <a href="mailto:khushiimundrawork@gmail.com" className="flex items-center gap-3 text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">
-                  <Mail size={16} /> khushiimundrawork@gmail.com
+                <a href="mailto:hello.kintsugiwellness@gmail.com" className="flex items-center gap-3 text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">
+                  <Mail size={16} /> hello.kintsugiwellness@gmail.com
                 </a>
-                <a href="tel:+917557040195" className="flex items-center gap-3 text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">
-                  <Phone size={16} /> +91 7557040195
+                <a href="tel:+917763961399" className="flex items-center gap-3 text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">
+                  <Phone size={16} /> +91 7763961399
                 </a>
                 <a href="/contact" className="flex items-center gap-3 text-sm text-[#bca289] hover:text-[var(--color-gold-100)] transition-colors">
                   <MessageSquare size={16} /> Drop a message

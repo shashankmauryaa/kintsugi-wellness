@@ -95,7 +95,7 @@ function generateAvailableSlots(dateStr: string, busySlots: any[], durationMinut
   const startSlotStr = `${dateStr}T${startHourStr}:${startMinStr}:00+05:30`;
   const endSlotStr = `${dateStr}T${endHourStr}:${endMinStr}:00+05:30`;
   
-  let currentSlot = new Date(startSlotStr);
+  const currentSlot = new Date(startSlotStr);
   const endOfDayWindow = new Date(endSlotStr);
 
   // --------------------------------------------------------------------------------

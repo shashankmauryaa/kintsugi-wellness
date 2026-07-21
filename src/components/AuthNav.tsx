@@ -27,7 +27,7 @@ export default function AuthNav() {
     router.refresh();
   };
 
-  const isDashboardPage = pathname?.startsWith("/portal");
+  const isDashboardPage = pathname?.startsWith("/clients") || pathname?.startsWith("/therapists");
 
   return (
     <div className="relative flex items-center justify-end z-50">
@@ -40,7 +40,7 @@ export default function AuthNav() {
           <User size={20} />
         </button>
       ) : (
-        <a href="/portal" className="bg-[var(--color-gold-600)] hover:bg-[var(--color-gold-700)] text-white w-10 h-10 flex items-center justify-center rounded-full transition-all shadow-sm relative z-20" aria-label="Client Portal">
+        <a href="/dashboard" className="bg-[var(--color-gold-600)] hover:bg-[var(--color-gold-700)] text-white w-10 h-10 flex items-center justify-center rounded-full transition-all shadow-sm relative z-20" aria-label="Portal">
           <User size={20} />
         </a>
       )}

@@ -10,6 +10,7 @@ import { format, addDays, startOfToday } from "date-fns";
 export default function PortalDashboard({ initialBookings, profileData }: { initialBookings: any[], profileData: any }) {
   const [now, setNow] = useState(new Date());
   const [mounted, setMounted] = useState(false);
+  const [bookings, setBookings] = useState(initialBookings);
   
   const [selectedUpcoming, setSelectedUpcoming] = useState<any | null>(null);
   const [selectedPast, setSelectedPast] = useState<any | null>(null);
@@ -40,8 +41,8 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
   }, []);
 
   // Compute partitions based on current 'now'
-  const upcomingBookings = initialBookings.filter((b) => b.endTime > now).sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
-  const pastBookings = initialBookings.filter((b) => b.endTime <= now).sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
+  const upcomingBookings = bookings.filter((b: any) => new Date(b.endTime) > now).sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  const pastBookings = bookings.filter((b: any) => new Date(b.endTime) <= now).sort((a: any, b: any) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
 
   const handleOpenPastModal = (session: any) => {
     setSelectedPast(session);
@@ -60,9 +61,11 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
     if (result.success) {
       setNoteSaved(true);
       // Mutate initialBookings locally so it reflects without page reload
-      const sessionIndex = initialBookings.findIndex(b => b.id === selectedPast.id);
+      const sessionIndex = bookings.findIndex((b: any) => b.id === selectedPast.id);
       if (sessionIndex !== -1) {
-        initialBookings[sessionIndex].note = noteContent;
+        const newBookings = [...bookings];
+        newBookings[sessionIndex] = { ...newBookings[sessionIndex], note: noteContent };
+        setBookings(newBookings);
       }
       setTimeout(() => {
         setNoteSaved(false);
@@ -105,12 +108,17 @@ export default function PortalDashboard({ initialBookings, profileData }: { init
     
     if (result.success) {
       // Update local state
-      const sessionIndex = initialBookings.findIndex(b => b.id === selectedUpcoming.id);
+      const sessionIndex = bookings.findIndex((b: any) => b.id === selectedUpcoming.id);
       if (sessionIndex !== -1) {
-        const durationMins = (initialBookings[sessionIndex].endTime.getTime() - initialBookings[sessionIndex].startTime.getTime()) / 60000;
+        const durationMins = (bookings[sessionIndex].endTime.getTime() - bookings[sessionIndex].startTime.getTime()) / 60000;
         const newStart = new Date(selectedRescheduleSlot);
-        initialBookings[sessionIndex].startTime = newStart;
-        initialBookings[sessionIndex].endTime = new Date(newStart.getTime() + durationMins * 60000);
+        const newBookings = [...bookings];
+        newBookings[sessionIndex] = { 
+          ...newBookings[sessionIndex], 
+          startTime: newStart,
+          endTime: new Date(newStart.getTime() + durationMins * 60000)
+        };
+        setBookings(newBookings);
       }
       setIsRescheduling(false);
       setSelectedUpcoming(null);

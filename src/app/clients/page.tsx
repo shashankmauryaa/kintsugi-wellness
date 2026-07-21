@@ -8,19 +8,19 @@ export default async function ClientPortal() {
   const session = cookieStore.get("session")?.value;
   
   if (!session) {
-    redirect("/login?redirect=/portal");
+    redirect("/login?redirect=/clients");
   }
 
   let userRecord;
   let profileData;
-  let bookings: any[] = [];
+  const bookings: any[] = [];
   let shouldRedirect = false;
 
   try {
     const decodedToken = await auth.verifySessionCookie(session, true);
     userRecord = await auth.getUser(decodedToken.uid);
     const profileDoc = await db.collection("clientProfiles").doc(decodedToken.uid).get();
-    let rawProfileData = profileDoc.data();
+    const rawProfileData = profileDoc.data();
     if (rawProfileData) {
       profileData = JSON.parse(JSON.stringify(rawProfileData));
     }
@@ -49,7 +49,7 @@ export default async function ClientPortal() {
   }
 
   if (shouldRedirect) {
-    redirect("/login?clear_session=1&redirect=/portal");
+    redirect("/login?clear_session=1&redirect=/clients");
   }
 
   return (

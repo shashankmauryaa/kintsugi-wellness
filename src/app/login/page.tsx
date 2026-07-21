@@ -9,19 +9,28 @@ import { motion } from "framer-motion";
 
 function LoginForm() {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isTherapistSignup, setIsTherapistSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = "/portal";
+  const redirectPath = "/clients";
 
   const handleAuthSuccess = async (idToken: string) => {
-    const result = await createSession(idToken);
+    const result = await createSession(idToken, isSignUp ? isTherapistSignup : false);
     if (result.success) {
+      const finalRedirectPath = result.userType === "therapist" ? "/therapists" : "/clients";
+      let targetPath = searchParams.get("redirect") || finalRedirectPath;
+      
+      // If they are a therapist and the original redirect was to a client route, force them to the therapist dashboard
+      if (result.userType === "therapist" && targetPath.startsWith("/clients")) {
+        targetPath = "/therapists";
+      }
+      
       // Refresh the router to apply middleware and server component state
-      router.push(redirectPath);
+      router.push(targetPath);
       router.refresh();
     } else {
       setError("Failed to create secure session.");
@@ -73,10 +82,10 @@ function LoginForm() {
         className="w-full max-w-md bg-white p-8 rounded-2xl shadow-sm border border-[var(--color-gold-200)]"
       >
         <h1 className="text-3xl font-heading text-[var(--color-gold-900)] mb-2 text-center">
-          {isSignUp ? "Create an Account" : "Welcome Back"}
+          {isSignUp ? (isTherapistSignup ? "Apply as a Therapist" : "Create an Account") : "Welcome Back"}
         </h1>
         <p className="text-[var(--color-gold-700)] text-center mb-8">
-          {isSignUp ? "Begin your journey with Kintsugi Wellness" : "Log in to access your client portal"}
+          {isSignUp ? (isTherapistSignup ? "Join our network of professionals" : "Begin your journey with Kintsugi Wellness") : "Log in to access your portal"}
         </p>
 
         {error && (
@@ -109,6 +118,9 @@ function LoginForm() {
               placeholder="••••••••"
             />
           </div>
+
+
+
           <button 
             type="submit"
             disabled={loading}
@@ -141,15 +153,39 @@ function LoginForm() {
           Google
         </button>
 
-        <p className="mt-8 text-center text-sm text-[var(--color-gold-700)]">
-          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-          <button 
-            onClick={() => setIsSignUp(!isSignUp)} 
-            className="text-[var(--color-gold-900)] font-medium hover:underline"
-          >
-            {isSignUp ? "Log In" : "Sign Up"}
-          </button>
-        </p>
+        <div className="mt-8 flex flex-col gap-3 text-center text-sm text-[var(--color-gold-700)]">
+          {isSignUp ? (
+            <p>
+              Already have an account?{" "}
+              <button 
+                onClick={() => { setIsSignUp(false); setIsTherapistSignup(false); }} 
+                className="text-[var(--color-gold-900)] font-medium hover:underline"
+              >
+                Log In
+              </button>
+            </p>
+          ) : (
+            <>
+              <p>
+                Don't have an account?{" "}
+                <button 
+                  onClick={() => { setIsSignUp(true); setIsTherapistSignup(false); }} 
+                  className="text-[var(--color-gold-900)] font-medium hover:underline"
+                >
+                  Sign Up
+                </button>
+              </p>
+              <p>
+                <button 
+                  onClick={() => { setIsSignUp(true); setIsTherapistSignup(true); }} 
+                  className="text-[var(--color-gold-900)] font-medium hover:underline"
+                >
+                  Sign up as a therapist
+                </button>
+              </p>
+            </>
+          )}
+        </div>
       </motion.div>
     </div>
   );

@@ -165,6 +165,7 @@ export async function verifyAndCreateBooking(paymentData: any, bookingDetails: a
     const bookingPayload = {
       id: bookingRef.id,
       userId: uid,
+      therapistId: bookingDetails.therapistId || "unknown",
       serviceId: bookingDetails.serviceId,
       consentFormId: consentFormId,
       startTime: startTime,
@@ -219,12 +220,17 @@ export async function saveSessionNote(bookingId: string, note: string) {
       return { success: false, error: "Booking not found" };
     }
 
-    if (bookingDoc.data()?.userId !== uid) {
+    const bookingData = bookingDoc.data();
+    
+    if (bookingData?.userId !== uid && bookingData?.therapistId !== uid) {
       return { success: false, error: "Unauthorized access to booking" };
     }
 
+    const isTherapist = bookingData?.therapistId === uid;
+    const updates: any = isTherapist ? { therapistNote: note } : { note: note };
+    
     await bookingRef.update({
-      note: note,
+      ...updates,
       updatedAt: new Date()
     });
 

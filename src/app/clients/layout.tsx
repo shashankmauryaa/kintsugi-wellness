@@ -2,8 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/firebase-admin";
 import Link from "next/link";
-import { FileText, Calendar, Clock, LogOut, User } from "lucide-react";
-import { removeSession } from "@/actions/auth";
+import { FileText, Calendar, Clock, User } from "lucide-react";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function PortalLayout({
   children,
@@ -14,7 +14,7 @@ export default async function PortalLayout({
   const session = cookieStore.get("session")?.value;
   
   if (!session) {
-    redirect("/login?redirect=/portal");
+    redirect("/login?redirect=/clients");
   }
 
   let userRecord;
@@ -28,7 +28,7 @@ export default async function PortalLayout({
   }
 
   if (shouldRedirect) {
-    redirect("/login?clear_session=1&redirect=/portal");
+    redirect("/login?clear_session=1&redirect=/clients");
   }
 
   return (
@@ -40,26 +40,18 @@ export default async function PortalLayout({
           <p className="text-sm text-[var(--color-gold-600)]">Client Portal</p>
         </div>
         <nav className="p-4 space-y-2 flex-1">
-          <Link href="/portal" className="flex items-center gap-3 px-4 py-3 text-[var(--color-gold-800)] hover:bg-[var(--color-gold-50)] rounded-xl font-medium transition-colors">
+          <Link href="/clients" className="flex items-center gap-3 px-4 py-3 text-[var(--color-gold-800)] hover:bg-[var(--color-gold-50)] rounded-xl font-medium transition-colors">
             <Calendar size={20} /> Dashboard
           </Link>
           <Link href="/book" className="flex items-center gap-3 px-4 py-3 text-[var(--color-gold-800)] hover:bg-[var(--color-gold-50)] rounded-xl font-medium transition-colors">
             <Clock size={20} /> Book Session
           </Link>
-          <Link href="/portal/my-info" className="flex items-center gap-3 px-4 py-3 text-[var(--color-gold-800)] hover:bg-[var(--color-gold-50)] rounded-xl font-medium transition-colors">
+          <Link href="/clients/my-info" className="flex items-center gap-3 px-4 py-3 text-[var(--color-gold-800)] hover:bg-[var(--color-gold-50)] rounded-xl font-medium transition-colors">
             <User size={20} /> My Info
           </Link>
         </nav>
         <div className="p-4 border-t border-[var(--color-gold-100)]">
-          <form action={async () => {
-            "use server";
-            await removeSession();
-            redirect("/login");
-          }}>
-            <button type="submit" className="flex w-full items-center gap-3 px-4 py-3 text-[var(--color-gold-800)] hover:bg-red-50 hover:text-red-600 rounded-xl font-medium transition-colors">
-              <LogOut size={20} /> Log Out
-            </button>
-          </form>
+          <LogoutButton />
         </div>
       </aside>
 
