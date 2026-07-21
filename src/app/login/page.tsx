@@ -23,15 +23,17 @@ function LoginForm() {
     if (result.success) {
       const finalRedirectPath = result.userType === "therapist" ? "/therapists" : "/clients";
       let targetPath = searchParams.get("redirect") || finalRedirectPath;
-      
+
       // If they are a therapist and the original redirect was to a client route, force them to the therapist dashboard
       if (result.userType === "therapist" && targetPath.startsWith("/clients")) {
         targetPath = "/therapists";
       }
-      
-      // Refresh the router to apply middleware and server component state
-      router.push(targetPath);
-      router.refresh();
+      if (result.userType === "client" && targetPath.startsWith("/therapists")) {
+        targetPath = "/clients";
+      }
+
+      // Use window.location.href for a hard redirect to ensure cookies are sent
+      window.location.href = targetPath;
     } else {
       setError("Failed to create secure session.");
       setLoading(false);
@@ -50,7 +52,7 @@ function LoginForm() {
       } else {
         userCredential = await signInWithEmailAndPassword(auth, email, password);
       }
-      
+
       const idToken = await userCredential.user.getIdToken();
       await handleAuthSuccess(idToken);
     } catch (err: any) {
@@ -63,7 +65,7 @@ function LoginForm() {
     setError(null);
     setLoading(true);
     const provider = new GoogleAuthProvider();
-    
+
     try {
       const userCredential = await signInWithPopup(auth, provider);
       const idToken = await userCredential.user.getIdToken();
@@ -76,7 +78,7 @@ function LoginForm() {
 
   return (
     <div className="flex-1 flex items-center justify-center py-20 px-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-white p-8 rounded-2xl shadow-sm border border-[var(--color-gold-200)]"
@@ -97,7 +99,7 @@ function LoginForm() {
         <form onSubmit={handleEmailAuth} className="space-y-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-[var(--color-gold-800)] mb-1">Email</label>
-            <input 
+            <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -108,7 +110,7 @@ function LoginForm() {
           </div>
           <div>
             <label className="block text-sm font-medium text-[var(--color-gold-800)] mb-1">Password</label>
-            <input 
+            <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -121,7 +123,7 @@ function LoginForm() {
 
 
 
-          <button 
+          <button
             type="submit"
             disabled={loading}
             className="w-full py-3 bg-[var(--color-gold-700)] hover:bg-[var(--color-gold-800)] text-white rounded-xl font-medium transition-colors disabled:opacity-70"
@@ -139,7 +141,7 @@ function LoginForm() {
           </div>
         </div>
 
-        <button 
+        <button
           onClick={handleGoogleAuth}
           disabled={loading}
           className="w-full py-3 bg-white border border-[var(--color-gold-300)] hover:bg-[var(--color-gold-50)] text-[var(--color-gold-900)] rounded-xl font-medium transition-colors disabled:opacity-70 flex items-center justify-center gap-3"
@@ -157,8 +159,8 @@ function LoginForm() {
           {isSignUp ? (
             <p>
               Already have an account?{" "}
-              <button 
-                onClick={() => { setIsSignUp(false); setIsTherapistSignup(false); }} 
+              <button
+                onClick={() => { setIsSignUp(false); setIsTherapistSignup(false); }}
                 className="text-[var(--color-gold-900)] font-medium hover:underline"
               >
                 Log In
@@ -168,16 +170,16 @@ function LoginForm() {
             <>
               <p>
                 Don't have an account?{" "}
-                <button 
-                  onClick={() => { setIsSignUp(true); setIsTherapistSignup(false); }} 
+                <button
+                  onClick={() => { setIsSignUp(true); setIsTherapistSignup(false); }}
                   className="text-[var(--color-gold-900)] font-medium hover:underline"
                 >
                   Sign Up
                 </button>
               </p>
               <p>
-                <button 
-                  onClick={() => { setIsSignUp(true); setIsTherapistSignup(true); }} 
+                <button
+                  onClick={() => { setIsSignUp(true); setIsTherapistSignup(true); }}
                   className="text-[var(--color-gold-900)] font-medium hover:underline"
                 >
                   Sign up as a therapist
