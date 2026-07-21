@@ -22,8 +22,7 @@ export default function LogoutButton() {
     } catch (e) {
       console.error("Failed to sign out from Firebase", e);
     }
-    router.push("/login");
-    router.refresh();
+    window.location.href = "/login";
   };
 
   return (

@@ -31,8 +31,7 @@ export default function AuthNav() {
     } catch (e) {
       console.error("Failed to sign out from Firebase", e);
     }
-    router.push("/login");
-    router.refresh();
+    window.location.href = "/login";
   };
 
   const isDashboardPage = pathname?.startsWith("/clients") || pathname?.startsWith("/therapists");
