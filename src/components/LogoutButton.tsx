@@ -12,8 +12,16 @@ export default function LogoutButton() {
 
   const handleLogout = async () => {
     setLoading(true);
-    await removeSession();
-    await auth.signOut();
+    try {
+      await removeSession();
+    } catch (e) {
+      console.error("Failed to remove session cookie", e);
+    }
+    try {
+      await auth.signOut();
+    } catch (e) {
+      console.error("Failed to sign out from Firebase", e);
+    }
     router.push("/login");
     router.refresh();
   };
